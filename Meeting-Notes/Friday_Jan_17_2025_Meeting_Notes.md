@@ -1,18 +1,18 @@
 **Meeting Notes taken by Mohammad during the initial meeting with Rahul (01-17-2025) @ 1pm**
 **ATTENDENCE:**
-	-**Roy Kravitz**
-	-**Nathan Fraly**
-	-**Riley Cox**
-	-**Xiang Li**
-	-**Hao Yang Han**
-	-**Mohammad Alshaiji**
+	-Roy Kravitz
+	-Nathan Fraly
+	-Riley Cox
+	-Xiang Li
+	-Hao Yang Han
+	-Mohammad Alshaiji
 
-#Meeting Notes:	
+# Meeting Notes:	
 The meeting is being held in order to discuss the scope of the project with Rahul
 -We shared with Rahul that in our research we were not able to find any open-source tools that would function with the Lattice Ultraplus or Crosslink FPGAs.
 -Rahul informed us past student groups have been able to get the Yosys open-source toolchain running with a upduino board containing an iCE40 Ultraplus FPGA
 
-##Three Phases:
+## Three Phases:
 As stated by Rahul the Project will consist of three phases.
 In phase 1, we will create a "nice" end product; Potentially to be used in showcasing events
 The end product will consist of the following:
@@ -24,8 +24,8 @@ The end product will consist of the following:
 The display should be able to shift through 7-8 solid colors in the intial protype, to be stepped up to 10-15 colors by the end of phase 1.
 
 A graphic of the proposed layout of product at the end of phase 1 is displayed below:
-
-					[PHASE 1]
+<pre>
+		[PHASE 1]
 +--------------------------------------------------+
 |                                                  |
 |                                                  |
@@ -43,10 +43,12 @@ A graphic of the proposed layout of product at the end of phase 1 is displayed b
 |                                                  |
 |                                                  |
 +--------------------------------------------------+
+</pre>
 
 In Phase 2, we are to upgrade the functionsality of the device so that it can display an image such as a smily face:
 
-					[PHASE 2]
+		 [PHASE 2]
+   <pre>
 +--------------------------------------------------+
 |                                                  |
 |                                                  |
@@ -64,10 +66,11 @@ In Phase 2, we are to upgrade the functionsality of the device so that it can di
 |                                                  |
 |                                                  |
 +--------------------------------------------------+
-
+   </pre>
 Rahul would like us to upgrade the product further to be able to display text on the display:
 
-					[PHASE 3]
+		[PHASE 3]
+  <pre>
 +--------------------------------------------------+
 |                                                  |
 |                                                  |
@@ -85,9 +88,9 @@ Rahul would like us to upgrade the product further to be able to display text on
 |                                                  |
 |                                                  |
 +--------------------------------------------------+
-
-
-##QnA:
+  </pre>
+  
+## QnA:
 
 As our industry sponsor requires an end product that is polished enough to be showcased, we inquired about the power requirements and the low-power design techniques he had mentioned previously in our email communication.
 -Rahul stated that by the end of Phase 1, the device must be battery powered but we can utilize a battery pack to accomplish this.
@@ -116,7 +119,8 @@ Roy suggested that if the intent is for the device to be able to function as a l
 Rahul agreed and so order of the phases was altered as follows:
 
 
-					[PHASE 1]
+                   [PHASE 1]
+<pre>
 +--------------------------------------------------+
 |                                                  |
 |                                                  |
@@ -134,11 +138,12 @@ Rahul agreed and so order of the phases was altered as follows:
 |                                                  |
 |                                                  |
 +--------------------------------------------------+
-
+</pre>
 
 For phase 2, Rahul would like us to upgrade the product to be able to display text on the display:
 
-					[PHASE 2]
+		[PHASE 2]
+<pre>
 +--------------------------------------------------+
 |                                                  |
 |                                                  |
@@ -156,11 +161,12 @@ For phase 2, Rahul would like us to upgrade the product to be able to display te
 |                                                  |
 |                                                  |
 +--------------------------------------------------+
-
+</pre>
 
 In Phase 3, we are to upgrade the functionsality of the device further so that it can display an image such as a smily face:
 
-					[PHASE 2]
+		[PHASE 3]
+<pre>
 +--------------------------------------------------+
 |                                                  |
 |                                                  |
@@ -178,7 +184,7 @@ In Phase 3, we are to upgrade the functionsality of the device further so that i
 |                                                  |
 |                                                  |
 +--------------------------------------------------+
-
+</pre>
 Rahul's final note was that:
 -He expects weekly progress reports and constant communication
 -Nathan is to serve as his point of contact
