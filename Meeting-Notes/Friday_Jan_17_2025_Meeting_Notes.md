@@ -1,5 +1,5 @@
 **Meeting Notes taken by Mohammad during the initial meeting with Rahul (01-17-2025) @ 1pm**
-**ATTENDENCE**:
+ATTENDENCE:
 	- Roy Kravitz
 	- Nathan Fraly
 	- Riley Cox
