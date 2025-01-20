@@ -1,5 +1,5 @@
 **Meeting Notes taken by Mohammad during the initial meeting with Rahul (01-17-2025) @ 1pm**
-**ATTENDENCE:**
+**ATTENDENCE**:
 	- Roy Kravitz
 	- Nathan Fraly
 	- Riley Cox
@@ -8,9 +8,9 @@
 	- Mohammad Alshaiji
 
 # Meeting Notes:	
-The meeting is being held in order to discuss the scope of the project with Rahul
--We shared with Rahul that in our research we were not able to find any open-source tools that would function with the Lattice Ultraplus or Crosslink FPGAs.
--Rahul informed us past student groups have been able to get the Yosys open-source toolchain running with a upduino board containing an iCE40 Ultraplus FPGA
+The meeting is being held in order to discuss the scope of the project with Rahul:
+- We shared with Rahul that in our research we were not able to find any open-source tools that would function with the Lattice Ultraplus or Crosslink FPGAs.
+- Rahul informed us past student groups have been able to get the Yosys open-source toolchain running with a upduino board containing an iCE40 Ultraplus FPGA
 
 ## Three Phases:
 As stated by Rahul the Project will consist of three phases.
