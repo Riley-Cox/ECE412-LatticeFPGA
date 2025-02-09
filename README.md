@@ -8,6 +8,10 @@
 - To attach a USB to WSL run `usbipd attach --wsl --busid <busid>`
 - In WSL, the device should show up when `lsusb` is ran
 - To disconnect the device run `usbipd detach --busid <busid>`
+
+## Dependencies
+- Install RISC-V GNU toolchain `sudo apt-get install gcc-riscv-unknown-elf`
+- Install Make `sudo apt-get install make`
   
 ## Open Source Toolchain Setup
 ### Ubuntu/Debian
