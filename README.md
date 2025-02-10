@@ -10,7 +10,7 @@
 - To disconnect the device run `usbipd detach --busid <busid>`
 
 ## Dependencies
-- Install RISC-V GNU toolchain `sudo apt-get install gcc-riscv-unknown-elf`
+- Install RISC-V GNU toolchain `sudo apt-get install gcc-riscv64-unknown-elf`
 - Install Make `sudo apt-get install make`
   
 ## Open Source Toolchain Setup
