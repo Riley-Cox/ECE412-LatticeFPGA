@@ -11,14 +11,18 @@
 
 ## Dependencies
 ### Ubuntu/Debian
-`sudo apt-get install autoconf automake autotools-dev curl python3 python3-pip python3-tomli libmpc-dev libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev ninja-build git cmake libglib2.0-dev libslirp-dev xxd`
+```
+sudo apt-get install autoconf automake autotools-dev curl python3 python3-pip python3-tomli libmpc-dev libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev ninja-build git cmake libglib2.0-dev libslirp-dev xxd make
+```
 ### Fedora
-`sudo yum install autoconf automake python3 libmpc-devel mpfr-devel gmp-devel gawk  bison flex texinfo patchutils gcc gcc-c++ zlib-devel expat-devel libslirp-devel xxd`
+```
+sudo yum install autoconf automake python3 libmpc-devel mpfr-devel gmp-devel gawk  bison flex texinfo patchutils gcc gcc-c++ zlib-devel expat-devel libslirp-devel xxd make
+```
 ### Arch
-`sudo pacman -Syyu autoconf automake curl python3 libmpc mpfr gmp gawk base-devel bison flex texinfo gperf libtool patchutils bc zlib expat libslirp xxd`
-## Other Dependencies
-- Install Make `sudo apt-get install make`
-- Install RISC-V GNU toolchain `sudo apt-get install gcc-riscv64-unknown-elf`
+```
+sudo pacman -Syyu autoconf automake curl python3 libmpc mpfr gmp gawk base-devel bison flex texinfo gperf libtool patchutils bc zlib expat libslirp xxd make
+```
+## RISC-V GNU Toolchain
 - From your home directory, clone the RISC-V GNU toolchain `git clone https://github.com/riscv/riscv-gnu-toolchain`
 - `cd` into the directory, run `./configure --prefix=/opt/riscv` then run `make` (This will take a long time)
 - From your home directory, open your shell rc file to edit (`vim .zshrc` or `vim .bashrc`) and on a new line add `export PATH="/opt/riscv/bin:$PATH"`
@@ -26,11 +30,17 @@
   
 ## Open Source Toolchain Setup
 ### Ubuntu/Debian
-`sudo apt-get install yosys fpga-icestorm nextpnr-ice40-qt`
+```
+sudo apt-get install yosys fpga-icestorm nextpnr-ice40-qt
+```
 ### Arch
-`yay -S yosys-git icestorm-git nextpnr-git`
+```
+yay -S yosys-git icestorm-git nextpnr-git
+```
 ### Fedora
-`sudo dnf install yosys icestorm nextpnr`
+```
+sudo dnf install yosys icestorm nextpnr
+```
 
 ## Migrating Icicle from UPduino V1 to V2.1
 - Remove SPI_FLASH define from the upduino-defines.sv file located in `/icicle/boards`
