@@ -8,7 +8,7 @@
   winget install --interactive --exact dorssel.usbipd-win
   ```
 - To ensure that it is installed run `usbipd list` , you should see your usb device with its BusID 
-- A USB bind is needed be sure that your powershell is ran as administrator, then run `usbipd bind --busid <busid>`
+- A USB bind is needed. Open Powershell as Admin, then run `usbipd bind --busid <busid>`
 - To attach a USB to WSL run `usbipd attach --wsl --busid <busid>`
 - In WSL, the device should show up when `lsusb` is ran
 - To disconnect the device run `usbipd detach --busid <busid>`
