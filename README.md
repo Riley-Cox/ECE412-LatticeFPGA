@@ -1,10 +1,14 @@
 # ECE412-LatticeFPGA
 ## WSL Setup
 - Install the Terminal app on the Mircosoft Store
-- Install a Linux Distrobution from the Microsoft Store, Debian was used for this project
-- Install usbipd through PowerShell by using the following command `winget install --interactive --exact dorssel.usbipd-win`
-- To ensure that it is installed run `usbipd list`
-- A USB bind is needed, run `usbipd bind --busid <busid>`
+- Install a Linux Distribution from the Microsoft Store, Debian was used for this project
+- Install usbipd through PowerShell by using the following command
+  
+  ```
+  winget install --interactive --exact dorssel.usbipd-win
+  ```
+- To ensure that it is installed run `usbipd list` , you should see your usb device with its BusID 
+- A USB bind is needed be sure that your powershell is ran as administrator, then run `usbipd bind --busid <busid>`
 - To attach a USB to WSL run `usbipd attach --wsl --busid <busid>`
 - In WSL, the device should show up when `lsusb` is ran
 - To disconnect the device run `usbipd detach --busid <busid>`
