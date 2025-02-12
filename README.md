@@ -38,7 +38,10 @@ sudo pacman -Syu autoconf automake curl python3 libmpc mpfr gmp gawk base-devel 
   ./configure --prefix=/opt/riscv
   ```
   then run `sudo make` (This will take a long time)
-- From your home directory, open your shell rc file to edit (`vim .zshrc` or `vim .bashrc`) and add `export PATH="/opt/riscv/bin:$PATH"`
+- From your home directory, open your shell rc file to edit (`vim .zshrc` or `vim .bashrc`) and add
+  ```
+  export PATH="/opt/riscv/bin:$PATH"
+  ```
 - Then run `source .zshrc` if using zsh or `source .bashrc` if using bash
   
   
