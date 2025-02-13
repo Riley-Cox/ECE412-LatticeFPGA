@@ -59,14 +59,16 @@ yay -S yosys-git icestorm-git nextpnr-git
 sudo dnf install yosys icestorm nextpnr
 ```
 
-## Migrating Icicle from UPduino V1 to V2.1
-- Remove SPI_FLASH define from the upduino-defines.sv file located in `/icicle/boards`
-- Change PROGMEM value from flash to ram in the upduino.mk file located in `/icicle/boards`
-- Change UART RX/TX pins to 15 and 14 respectively in the upduino.pcf file located in `/icicle/boards`
-- Create a flash_csn output in icicle.sv and assign it 1 (`assign flash_csn = 1`)
 
 ## Building on the UPduino board
 - Navigate to `/icicle`
 - Run `make clean`
 - Run `make BOARD=upduino`
 - Run `sudo iceprog top.bin`
+
+
+## Migrating Icicle from UPduino V1 to V2.1
+- Removed SPI_FLASH define from the upduino-defines.sv file located in `/icicle/boards`
+- Changed PROGMEM value from flash to ram in the upduino.mk file located in `/icicle/boards`
+- Changed UART RX/TX pins to 15 and 14 respectively in the upduino.pcf file located in `/icicle/boards`
+- Created a flash_csn output in icicle.sv and assign it 1 (`assign flash_csn = 1`)
