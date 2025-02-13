@@ -35,7 +35,7 @@ sudo pacman -Syu autoconf automake curl python3 libmpc mpfr gmp gawk base-devel 
   
 - `cd` into the directory, run
   ```
-  ./configure --prefix=/opt/riscv
+  ./configure --prefix=<writeable directory>
   ```
   then run `make` (This will take a long time)
 - From your home directory, open your shell rc file to edit (`vim .zshrc` or `vim .bashrc`) and add
