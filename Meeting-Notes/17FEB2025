@@ -1,0 +1,22 @@
+HaoYang out sick today
+
+Everyone has Radiant installed
+
+Mohammad working on SoC block diagram, have done for Rahul today
+
+SPI Implementation done - Mohammad
+  Need to integrate after further testing
+  Test plan is to light up LCD screen at least
+  
+Nathan to write PWM module for core
+
+Riley to work on SPI C library skeleton
+  Pull others in as needed
+  focusing on how to send commands out
+
+Xiang working on digging through adafruit C library to figure out what commands need sent out
+
+HaoYang working on 3D enclosure probably, but sick so no update today.
+
+BLOCKS --
+Nathan needs help with Radiant duplicate module issue for Icicle - also get Free Radiant license to access QuestaSim
