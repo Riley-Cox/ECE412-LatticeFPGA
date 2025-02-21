@@ -1,0 +1,25 @@
+Meeting Notes
+
+Riley: Hasn't been able to start on SPI skeleton yet, digging through adafruit libraries. 
+  This weekend work on button interfacing code with Nathan so button press triggers Hello World print
+
+Xiang: Translated the setup commands from adafruit library to initialize the LCD screen.
+  Need to use translation to setup our own C functions
+  Will work on priority list later
+
+Mohammad: SPI module ready for physical test
+  Simulation complete
+  Synthesization complete - emulation tests to come shortly
+  After emulation tests, will hook to LCD screen to test screen response
+
+Nathan: Radiant duplicate module issue
+  Going to attempt to resolve with Rahul 22FEB2025
+
+Need more inter/inner-team communication; Xiang and Mohammad isolated from each other, SPI isolated from CORE
+
+Future looking;
+Riley and Mohammad to integrate SPI module once testing complete, Nathan to help when button and PWM complete
+Nathan to do PWM/button implementation
+Xiang to research color control on screen, then maybe text if possible
+
+Haoyang sick again
