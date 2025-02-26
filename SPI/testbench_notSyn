@@ -1,0 +1,86 @@
+
+
+
+module tb_spi_controller;
+
+  // Testbench signals
+  logic clk;
+  logic reset_n;
+  logic spi_start;
+  logic [7:0] spi_data_in;
+  logic spi_dc;
+
+  logic spi_busy;
+  logic spi_done;
+
+  logic spi_clk;
+  logic spi_mosi;
+  logic spi_cs_n;
+  logic lcd_dc;
+
+  // Instantiate the SPI controller (DUT)
+  spi_controller #(
+    .SPI_DIV(4)
+  ) dut (
+    .clk(clk),
+    .reset_n(reset_n),
+    .spi_start(spi_start),
+    .spi_data_in(spi_data_in),
+    .spi_dc(spi_dc),
+    .spi_busy(spi_busy),
+    .spi_done(spi_done),
+    .spi_clk(spi_clk),
+    .spi_mosi(spi_mosi),
+    .spi_cs_n(spi_cs_n),
+    .lcd_dc(lcd_dc)
+  );
+
+  // Clock generation: 10 ns period (16 MHz)
+  initial begin
+    clk = 0;
+    forever #32 clk = ~clk;
+  end
+
+  // Test sequence
+  initial begin
+    // Initialize signals and assert reset.
+    reset_n = 0;
+    spi_start = 0;
+    spi_data_in = 8'h00;
+    spi_dc = 1'b0;
+    #20;
+    
+    // Deassert reset.
+    reset_n = 1;
+    #20;
+    
+    // --- Transaction 1: Write a command or data byte ---
+    $display("Starting Transaction 1: sending 8'hA5 with dc=1");
+    spi_data_in = 8'hA5;
+    spi_dc = 1'b1;
+    spi_start = 1;       // One-cycle pulse to start transaction
+    #64;
+    spi_start = 0;
+    
+    // Wait until the transaction is done.
+    wait (spi_done == 1);
+    $display("Transaction 1 complete");
+    
+    #100;
+    
+    // --- Transaction 2: Write another byte ---
+    $display("Starting Transaction 2: sending 8'h3C with dc=0 (command)");
+    spi_data_in = 8'h3C;
+    spi_dc = 1'b0;
+    spi_start = 1;
+    #10;
+    spi_start = 0;
+    wait (spi_done == 1);
+    $display("Transaction 2 complete");
+    
+    // End simulation
+    #100;
+    $finish;
+  end
+
+endmodule
