@@ -1,0 +1,22 @@
+Meeting notes 28FEB2025
+
+Xiang:
+  Has documentation for filling the whole screen. Will confirm things are working once we have successful bit stream programming
+
+Mohammad/Nathan:
+  Attempting to debug Radiant toolchain; bit stream programming not successful yet (leads based on Rahul information)
+
+HaoYang:
+  Modeling heart-shaped 3D print per Rahul's request, issues with curved lines.
+
+Riley:
+  Trying to deal with Radiant issue as well
+
+Next week/this weekend: Nathan to get blinking LED bit stream on a board, or work with Rahul to figure out how to make it happen
+Rest of team sort of in holding pattern while this gets done. 
+Xiang continuing work on text display research for screen.
+HaoYang continue 3D modeling work with curved lines
+
+Heart-shaped justification:
+  Once LCD showing different colors, blink every second, use LCD to show red color for V-day/4th of july use images/ holiday-based image display, etc.
+  Don't track date, back to original phase 3 with image library, place buttons/ports on edge. Use buttons to cycle images instead of color if we get there. 
