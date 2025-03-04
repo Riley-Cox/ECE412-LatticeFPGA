@@ -7,7 +7,16 @@ module Top_module_spi (
   output spi_cs_n,
   output lcd_dc
 );
+  //Clock signal Generation
+HSOSC clock (
+    .CLKHFEN(1'b1), // Enable the output  
+    .CLKHFPU(1'b1), // Power up the oscillator  
+    .CLKHF(clk) // Oscillator output  
+);
 
+// Divide the oscillator down to 6 MHz
+defparam clock.CLKHF_DIV = "0b11";
+  
   // Internal control signals for the SPI controller
   reg        spi_start_reg;
   reg [7:0]  spi_data_in_reg;
