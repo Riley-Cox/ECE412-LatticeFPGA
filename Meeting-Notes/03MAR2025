@@ -1,0 +1,17 @@
+Meeting notes 03MAR2025
+
+Xiang: no significant progress, trying to figure out how text display works
+
+Riley: No significant progress (other class work)
+
+Nathan: No significant rpgoress (drill weekend and had other classwork)
+
+HaoYang: Trying to get 3D enclosure heart-shaped per Rahul request
+  Will get help from people in EPL
+
+Mohammad: Was having issues where all outputs were high/metastable
+  Reset signal was not working, clock frequency may have been too low
+  Bringing more Oscilloscope probes to monitor inputs and outputs 
+  Going to try instantiating HSOSC in top module to try to get a stable clock signal
+
+Nathan to ask Rahul about Radiant workshop as discussed a few weeks ago
