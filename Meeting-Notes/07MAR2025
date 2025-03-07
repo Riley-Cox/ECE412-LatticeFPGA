@@ -1,0 +1,29 @@
+Meeting Notes 07MAR2025
+
+Struggling overall with internal clock signal generation for Radiant
+
+Mohammad:
+  Debugging SPI module; will try post-synth sim this weekend and see if there are any obvious issues there
+  Figured out how to get programming to work on local machine; big turn around time save
+
+Riley:
+  Waiting for integration
+  Looking into Yosys integration for SPI
+
+HaoYang:
+  3D model complete; waiting for print until a board is available (Rahul was supposed to drop boards off today, Nathan never followed up)
+
+Xiang:
+  Figured out how to print text in principle; each character is going to consume 5 bytes in memory, full font table is 2.2k each, minimum font table is ~500 bytes
+
+Nathan:
+  Got buttons/PWM/color change proof of concept; will need to wait until full integration to complete to ensure correct values/pinouts
+
+Next week:
+  TODO:
+    Write initialization process in C
+    Write color change functions in C
+    Start integration for SPI module once it's ready (get it ready!)
+    Finish testing SPI module
+    Need to add securing mechanisms to 3D enclosure and print it for fit testing
+    
