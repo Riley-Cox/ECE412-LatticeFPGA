@@ -1,26 +1,61 @@
+`timescale 1ns/100ps
+
+`ifndef SB_GB_V
+`define SB_GB_V
+
+module SB_GB (
+  input  USER_SIGNAL_TO_GLOBAL_BUFFER,
+  output GLOBAL_BUFFER_OUTPUT
+);
+  // For simulation, simply pass the input to the output.
+  assign GLOBAL_BUFFER_OUTPUT = USER_SIGNAL_TO_GLOBAL_BUFFER;
+endmodule
+
+`endif
+
 module Top_module_spi (
-  input  clk,       // External clock (e.g. 16 MHz)
+  //input  clk,       // External clock (e.g. 16 MHz)
   input  reset_n,   // Active low reset
   // SPI and LCD interface outputs 
   output spi_clk,
   output spi_mosi,
   output spi_cs_n,
-  output lcd_dc
-);
-  //Clock signal Generation
-HSOSC clock (
-    .CLKHFEN(1'b1), // Enable the output  
-    .CLKHFPU(1'b1), // Power up the oscillator  
-    .CLKHF(clk) // Oscillator output  
+  output lcd_dc,
+  output test_out
 );
 
-// Divide the oscillator down to 6 MHz
-defparam clock.CLKHF_DIV = "0b11";
-  
+wire clk_buf;
+wire clk;
+
+HSOSC
+#(
+.CLKHF_DIV ("0b11")
+// 0b00=48MHz(default), 0b01=24MHz, 0b10=12MHz, 0b11=6MHz
+) u_HSOSC (
+.CLKHFPU (1'b1), // I: power up, active high
+.CLKHFEN (1'b1), // I: output enable, active high
+.CLKHF (clk_buf) // O: high speed clock output
+);
+
+SB_GB clk_buf_inst (
+  .USER_SIGNAL_TO_GLOBAL_BUFFER(clk_buf),
+  .GLOBAL_BUFFER_OUTPUT(clk)
+);
+
+assign test_out = clk;
+//logic reset_n;
+/**
+initial begin
+  reset_n = 1'b0;  // assert reset
+  #500;            // hold reset for 100 time units
+  reset_n = 1'b1;  // deassert reset
+end
+**/
+
   // Internal control signals for the SPI controller
-  reg        spi_start_reg;
-  reg [7:0]  spi_data_in_reg;
-  reg        spi_dc_reg;
+   (* syn_preserve = "1" *) reg        spi_start_reg;
+   (* syn_preserve = "1" *) reg [7:0]  spi_data_in_reg;
+   (* syn_preserve = "1" *) reg        spi_dc_reg;
   wire       spi_busy;
   wire       spi_done;
 
@@ -50,11 +85,12 @@ defparam clock.CLKHF_DIV = "0b11";
              STATE_WAIT2  = 3'd5,
              STATE_DONE   = 3'd6;
 
-  reg [2:0] state;
-  reg [15:0] delay_counter;  // Adjust width and max count as needed
+  (* syn_preserve = "1" *) reg [2:0] state;
+  (* syn_preserve = "1" *) reg [15:0] delay_counter;  // Adjust width and max count as needed
 
   // FSM: drives two transactions in sequence.
   // Transaction 1 sends 8'hA5 with spi_dc = 1, and Transaction 2 sends 8'h3C with spi_dc = 0.
+
   always @(posedge clk or negedge reset_n) begin
     if (!reset_n) begin
       state           <= STATE_IDLE;
