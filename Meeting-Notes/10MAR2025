@@ -15,10 +15,11 @@ Xiang:
 Just finished writing preliminary C-code for color changing and Screen Initialization
 
 Nathan:
-Not in attendance
+- Helped Mohammad with clock issue
 
 ToDo:
 Begin Yosys integration
 Debug Clock Issue
 Do preliminary work on remaining integration
 Try to get more experience with the Radiant tolchain as we get into Spring term
+Will test with code provided by Roy to see if the clock issue persists in his code as well
