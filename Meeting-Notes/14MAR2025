@@ -1,0 +1,21 @@
+Meeting Notes 14MAR2025
+
+Xiang:
+  Completed preliminary C code for SPI
+  Waiting on SPI integration
+
+Nathan:
+  Tried to help troubleshoot/debug SPI clock issues, no luck
+  Should start working on integrating buttons and PWM to icicle via Yosys and/or Radiant soon
+
+Riley:
+  Tried to help troubleshoot/debug SPI clock issues, no luck
+  Blocked by SPI issues
+
+Mohammad:
+  Continued work on SPI clock issue to allow integration to move forward, no luck
+  Blocked by SPI issues
+
+HaoYang: Focusing on 372 Final, not attending
+
+Will likely need Roy/Rahul support on SPI clock issue, running out of ideas at this point. 
