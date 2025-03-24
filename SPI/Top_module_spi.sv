@@ -2,15 +2,6 @@
 
 `ifndef SB_GB_V
 `define SB_GB_V
-
-module SB_GB (
-  input  USER_SIGNAL_TO_GLOBAL_BUFFER,
-  output GLOBAL_BUFFER_OUTPUT
-);
-  // For simulation, simply pass the input to the output.
-  assign GLOBAL_BUFFER_OUTPUT = USER_SIGNAL_TO_GLOBAL_BUFFER;
-endmodule
-
 `endif
 
 module Top_module_spi (
@@ -27,20 +18,16 @@ module Top_module_spi (
 wire clk_buf;
 wire clk;
 
-HSOSC
-#(
-.CLKHF_DIV ("0b11")
+SB_HFOSC
 // 0b00=48MHz(default), 0b01=24MHz, 0b10=12MHz, 0b11=6MHz
-) u_HSOSC (
+ u_HSOSC (
 .CLKHFPU (1'b1), // I: power up, active high
 .CLKHFEN (1'b1), // I: output enable, active high
 .CLKHF (clk_buf) // O: high speed clock output
 );
 
-SB_GB clk_buf_inst (
-  .USER_SIGNAL_TO_GLOBAL_BUFFER(clk_buf),
-  .GLOBAL_BUFFER_OUTPUT(clk)
-);
+defparam u_HSOSC.CLKHF_DIV = "0b11";
+
 
 assign test_out = clk;
 //logic reset_n;

@@ -14,3 +14,9 @@ set_io leds[6]   31
 set_io leds[7]   32
 set_io uart_rx   15
 set_io uart_tx   14 
+set_io -nowarn spi_mosi  27
+set_io spi_clk	 26
+set_io spi_cs_n	 28
+set_io lcd_dc 	 23
+set_io test_out  35
+set_io reset_n   21
