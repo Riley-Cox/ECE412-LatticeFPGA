@@ -3,7 +3,8 @@
 module Top_module_spi (
   //input logic clk,       // External clock (e.g. 16 MHz)
  // input clk_test ,
- (* PULLUP *) input  reset_n,   // Active low reset
+  input  reset_n,   // Active low reset
+
   // SPI and LCD interface outputs 
   output logic spi_clk,
   output logic spi_mosi,
