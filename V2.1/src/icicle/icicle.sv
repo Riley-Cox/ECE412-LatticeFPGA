@@ -21,19 +21,19 @@ module icicle (
     input clk,
     input reset,
 
-`ifdef SPI_FLASH
-    /* serial flash */
-    output logic flash_clk,
-    output logic flash_csn,
+//`ifdef SPI_FLASH
+    ///* serial flash */
+    //output logic flash_clk,
+    //output logic flash_csn,
 
-    output logic flash_io0_en,
-    input flash_io0_in,
-    output logic flash_io0_out,
+    //output logic flash_io0_en,
+    //input flash_io0_in,
+    //output logic flash_io0_out,
 
-    output logic flash_io1_en,
-    input flash_io1_in,
-    output logic flash_io1_out,
-`endif
+    //output logic flash_io1_en,
+    //input flash_io1_in,
+    //output logic flash_io1_out,
+//`endif
 
     /* LEDs */
     output logic [7:0] leds,
@@ -71,8 +71,18 @@ module icicle (
     logic [31:0] mem_write_value;
     logic mem_ready;
     logic mem_fault;
+	logic [31:0] ram_read_value;
+    logic ram_ready;
+	logic [31:0] leds_read_value;
+    logic leds_ready;
+    logic [31:0] uart_read_value;
+    logic uart_ready;
+    logic [31:0] timer_read_value;
+    logic timer_ready;
+    logic [31:0] flash_read_value;
+    logic flash_ready;
 
-    assign mem_read_value = ram_read_value | leds_read_value | uart_read_value | timer_read_value | flash_read_value;
+    assign mem_read_value = ram_read_value | leds_read_value | uart_read_value | timer_read_value | flash_read_value;
     assign mem_ready = ram_ready | leds_ready | uart_ready | timer_ready | flash_ready | mem_fault;
 
     bus_arbiter bus_arbiter (
@@ -160,9 +170,6 @@ module icicle (
         endcase
     end
 
-    logic [31:0] ram_read_value;
-    logic ram_ready;
-
     ram #(
         .SIZE(`RAM_SIZE)
     ) ram (
@@ -178,8 +185,7 @@ module icicle (
         .ready_out(ram_ready)
     );
 
-    logic [31:0] leds_read_value;
-    logic leds_ready;
+
 
     assign leds_read_value = {24'b0, leds_sel ? leds : 8'b0};
     assign leds_ready = leds_sel;
@@ -189,8 +195,7 @@ module icicle (
             leds <= mem_write_value[7:0];
     end
 
-    logic [31:0] uart_read_value;
-    logic uart_ready;
+
 
     uart uart (
         .clk(clk),
@@ -210,8 +215,7 @@ module icicle (
         .ready_out(uart_ready)
     );
 
-    logic [31:0] timer_read_value;
-    logic timer_ready;
+
 
     timer timer (
         .clk(clk),
@@ -230,8 +234,6 @@ module icicle (
         .ready_out(timer_ready)
     );
 
-    logic [31:0] flash_read_value;
-    logic flash_ready;
 
 `ifdef SPI_FLASH
     flash flash (

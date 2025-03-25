@@ -57,7 +57,7 @@ module rv32_fetch #(
     /* data out (to memory bus) */
     output logic [31:0] instr_address_out
 );
-    logic [31:0] pc;
+    logic [31:0] pc = RESET_VECTOR;
     logic [31:0] next_pc;
 
     logic overwrite_pc;
@@ -118,7 +118,6 @@ module rv32_fetch #(
     end
 
     initial begin
-        pc <= RESET_VECTOR;
         instr_out <= `RV32_INSTR_NOP;
     end
 
