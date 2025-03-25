@@ -1,0 +1,8 @@
+read_verilog -DICE40 -noautowire -sv Top_module_spi.sv spi.sv
+hierarchy -top Top_module_spi
+proc
+opt -full
+alumacc
+share -aggressive
+opt -full
+synth_ice40 -top Top_module_spi -json top.json
