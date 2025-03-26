@@ -1,0 +1,21 @@
+Meeting notes 26MAR2025
+
+Mohammad:
+  Still working on Yosys synthesis for SPI so input pin for reset doesn't need set high
+  Yosys synthesis works, but needs an active high connection to behave corectly
+  Ready for integration
+
+Xiang:
+  No updates, waiting on guidance for documentation from Roy/Rahul
+
+Riley/Nathan:
+  Issues with inferred clocks on net clk in top module
+  Unsure if these are the root cause of why Radiant isn't successfully programming the board
+  Will try defining the net instead of the port for clock period
+  Once synthesis warning is clear, will try with same clock speed as in Yosys implementation
+
+Haoyang:
+  Unable to attend today, ill
+
+
+Team focus shifting to Yosys if Radiant issues have no progress by Friday. Will update Rahul if this happens.
