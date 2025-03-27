@@ -39,13 +39,13 @@ module icicle (
 
     input  uart_rx,
     output logic uart_tx,
-    output logic flash_csn
+    output logic flash_csn,
 
     /* SPI */
-    output logic spi_clk;
-    output logic spi_mosi;
-    output logic spi_cs_n;
-    output logic lcd_dc;
+    output logic spi_clk,
+    output logic spi_mosi,
+    output logic spi_cs_n,
+    output logic lcd_dc
 );
 
 
@@ -169,7 +169,6 @@ module icicle (
         flash_sel = 0;
         spi_sel = 0;
         mem_fault = 0;
-	spi_dc = 0;
 	
 
         casez (mem_address)
