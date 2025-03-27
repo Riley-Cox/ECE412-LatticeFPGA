@@ -21,7 +21,8 @@ module top (
 
     /* UART */
     input uart_rx,
-    output logic uart_tx,
+    output logic uart_tx
+
 	
 	/* SPI Controller */
 	output logic spi_clk,
