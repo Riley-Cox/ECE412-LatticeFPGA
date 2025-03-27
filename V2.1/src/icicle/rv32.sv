@@ -38,7 +38,15 @@ module rv32 #(
     input data_fault_in,
 
     /* timer */
-    output logic [63:0] cycle_out
+    output logic [63:0] cycle_out.
+	
+	/* SPI Controller */
+	output logic        spi_start,
+	output logic [7:0]  spi_data_out,
+	output logic        spi_dc,
+	input  logic        spi_busy,
+	input  logic        spi_done
+
 );
     /* hazard -> fetch control */
     logic pcgen_stall;
