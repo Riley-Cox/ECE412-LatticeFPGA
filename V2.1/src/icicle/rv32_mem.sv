@@ -105,6 +105,14 @@ module rv32_mem (
 
     /* data out (to timer) */
     output logic [63:0] cycle_out
+	
+	// SPI controller interface
+	output logic        spi_start,
+	output logic [7:0]  spi_data_out,
+	output logic        spi_dc,
+	input  logic        spi_busy,
+	input  logic        spi_done,
+
 );
     // SPI register base addresses
     localparam [31:0] SPI_BASE_ADDR   = 32'h80000000;
