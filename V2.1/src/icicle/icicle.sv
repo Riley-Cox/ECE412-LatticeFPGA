@@ -255,7 +255,7 @@ module icicle (
 
     spi_controller spi (
 	.clk(clk),
-	.reset_n(reset),
+	.reset_n(~reset),
 	
 	// Processor Interface
 	.spi_start(spi_start),
