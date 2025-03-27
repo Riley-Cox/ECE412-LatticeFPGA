@@ -596,7 +596,7 @@ module rv32 #(
         .data_write_value_out(data_write_value_out),
 
         /* data out (to timer) */
-        .cycle_out(cycle_out)
+        .cycle_out(cycle_out),
 		
 		/* SPI Controller */
 		.spi_start(spi_start),
