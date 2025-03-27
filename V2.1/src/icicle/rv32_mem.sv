@@ -88,14 +88,15 @@ module rv32_mem (
     output logic [31:0] data_address_out,
     output logic [31:0] data_write_value_out,
 
-    output logic [63:0] cycle_out
+    /* data out (to timer) */
+    output logic [63:0] cycle_out,
 	
 	// SPI controller interface
 	output logic        spi_start,
 	output logic [7:0]  spi_data_out,
 	output logic        spi_dc,
 	input  logic        spi_busy,
-	input  logic        spi_done,
+	input  logic        spi_done
 
 );
 
