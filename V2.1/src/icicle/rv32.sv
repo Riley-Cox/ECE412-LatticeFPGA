@@ -597,7 +597,16 @@ module rv32 #(
 
         /* data out (to timer) */
         .cycle_out(cycle_out)
-);
+
+		
+		/* SPI Controller */
+		.spi_start(spi_start),
+		.spi_data_out(spi_data_out),
+		.spi_dc(spi_dc),
+		.spi_busy(spi_busy),
+		.spi_done(spi_done)
+    );
+
 
     rv32_writeback writeback (
         .clk(clk),
