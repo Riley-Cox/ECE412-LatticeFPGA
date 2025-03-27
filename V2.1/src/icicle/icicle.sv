@@ -4,6 +4,7 @@
 `include "rv32.sv"
 `include "timer.sv"
 `include "uart.sv"
+`include "spi.sv"
 
 `ifdef ECP5
 `define RAM_SIZE 8192
@@ -42,6 +43,12 @@ module icicle (
     input uart_rx,
     output logic uart_tx,
     output logic flash_csn
+
+    /* SPI */
+    output logic spi_clk;
+    output logic spi_mosi;
+    output logic spi_cs_n;
+    output logic lcd_dc;
 );
 
     assign flash_csn = 1;
@@ -141,6 +148,7 @@ module icicle (
     logic uart_sel;
     logic timer_sel;
     logic flash_sel;
+    logic spi_sel;
 
     always_comb begin
         ram_sel = 0;
@@ -149,6 +157,8 @@ module icicle (
         timer_sel = 0;
         flash_sel = 0;
         mem_fault = 0;
+	spi_dc = 0;
+	
 
         casez (mem_address)
             32'b00000000_00000000_????????_????????: ram_sel = 1;
@@ -156,6 +166,7 @@ module icicle (
             32'b00000000_00000010_00000000_0000????: uart_sel = 1;
             32'b00000000_00000011_00000000_0000????: timer_sel = 1;
             32'b00000001_????????_????????_????????: flash_sel = 1;
+	    32'b00000000_00000100_00000000_00000001: spi_data_sel = 1;  	    	   //set lsb to zero to send command 
             default:                                 mem_fault = 1;
         endcase
     end
@@ -230,8 +241,36 @@ module icicle (
         .ready_out(timer_ready)
     );
 
+
+    logic spi_busy;
+    logic spi_done;
+
+    spi_controller spi (
+	.clk(clk),
+	.reset_n(reset),
+	
+	// Processor Interface
+	.spi_start(spi_sel),
+	.spi_data_in(mem_write_value),
+	.spi_dc(spi_dc),
+	.spi_busy(spi_busy),
+	.spi_done(spi_done),
+	
+	// SPI pins
+	.spi_clk(spi_clk),
+	.spi_mosi(spi_mosi),
+	.spi_cs_n(spi_cs_n),
+
+	// LCD control signal
+	.lcd_dc(lcd_dc)
+    );
+
+
     logic [31:0] flash_read_value;
     logic flash_ready;
+
+    
+
 
 `ifdef SPI_FLASH
     flash flash (
