@@ -77,9 +77,17 @@ module icicle (
     logic [31:0] mem_write_value;
     logic mem_ready;
     logic mem_fault;
+	
+    /* SPI memory bus*/
+    logic spi_start;
+    logic [7:0] spi_data_out;
+    logic spi_dc;
+    logic spi_busy;
+    logic spi_done;
 
-    assign mem_read_value = ram_read_value | leds_read_value | uart_read_value | timer_read_value | flash_read_value | spi_read_value;
-    assign mem_ready = ram_ready | leds_ready | uart_ready | timer_ready | flash_ready | spi_ready | mem_fault;
+    assign mem_read_value = ram_read_value | leds_read_value | uart_read_value | timer_read_value | flash_read_value;
+    assign mem_ready = ram_ready | leds_ready | uart_ready | timer_ready | flash_ready | mem_fault;
+
 
     bus_arbiter bus_arbiter (
         .clk(clk),
@@ -133,7 +141,16 @@ module icicle (
         .data_ready_in(data_ready),
         .data_fault_in(data_fault),
 
-        .cycle_out(cycle)
+
+        /* timer */
+        .cycle_out(cycle),
+
+	/* SPI */
+	.spi_start(spi_start),
+	.spi_data_out(spi_data_out),
+	.spi_dc(spi_dc),
+	.spi_busy(spi_busy),
+	.spi_done(spi_done)
     );
 
 
@@ -142,7 +159,6 @@ module icicle (
     logic uart_sel;
     logic timer_sel;
     logic flash_sel;
-    logic spi_sel;
 
 
     always_comb begin
@@ -162,7 +178,6 @@ module icicle (
             32'b00000000_00000010_00000000_0000????: uart_sel = 1;
             32'b00000000_00000011_00000000_0000????: timer_sel = 1;
             32'b00000001_????????_????????_????????: flash_sel = 1;
-	    32'b00000000_00000100_00000000_00000001: spi_data_sel = 1;  	    	   //set lsb to zero to send command 
             default:                                 mem_fault = 1;
         endcase
     end
@@ -228,16 +243,13 @@ module icicle (
     );
 
 
-    logic spi_busy;
-    logic spi_done;
-
     spi_controller spi (
 	.clk(clk),
 	.reset_n(reset),
 	
 	// Processor Interface
-	.spi_start(spi_sel),
-	.spi_data_in(mem_write_value),
+	.spi_start(spi_start),
+	.spi_data_in(spi_data_out),
 	.spi_dc(spi_dc),
 	.spi_busy(spi_busy),
 	.spi_done(spi_done),
