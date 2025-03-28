@@ -101,7 +101,7 @@ module rv32_mem (
 );
 
     // SPI register base addresses
-    localparam [31:0] SPI_BASE_ADDR   = 32'h80000000;
+    localparam [31:0] SPI_BASE_ADDR   = 32'h00001FF0;
     localparam [31:0] SPI_DATA_ADDR   = SPI_BASE_ADDR;
     localparam [31:0] SPI_CTRL_ADDR   = SPI_BASE_ADDR + 4;
     localparam [31:0] SPI_STATUS_ADDR = SPI_BASE_ADDR + 8;
