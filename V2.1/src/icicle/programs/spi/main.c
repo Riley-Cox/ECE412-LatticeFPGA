@@ -1,10 +1,10 @@
 #include <stdint.h>
 
 #define LEDS		(*(volatile uint32_t*)) 0x00010000)
-#define SPI_DATA 	(*(volatile uint32_t*) 0x80000000)
-#define SPI_CTRL	(*(volatile uint32_t*) 0x80000004)
-#define SPI_STATUS  (*(volatile uint32_t*) 0x80000008)
-#define SPI_DC		(*(volatile uint32_t*) 0x8000000C)
+#define SPI_DATA 	(*(volatile uint32_t*) 0x00001FF0)
+#define SPI_CTRL	(*(volatile uint32_t*) 0x00001FF4)
+#define SPI_STATUS  (*(volatile uint32_t*) 0x00001FF8)
+#define SPI_DC		(*(volatile uint32_t*) 0x00001FFC)
 
 //macros to access status bits
 #define SPI_BUSY     (SPI_STATUS & 0x01)
