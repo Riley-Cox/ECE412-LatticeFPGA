@@ -88,25 +88,9 @@ module rv32_mem (
     output logic [31:0] data_address_out,
     output logic [31:0] data_write_value_out,
 
-    /* data out (to timer) */
-    output logic [63:0] cycle_out,
-	
-	// SPI controller interface
-	output logic        spi_start,
-	output logic [7:0]  spi_data_out,
-	output logic        spi_dc,
-	input  logic        spi_busy,
-	input  logic        spi_done
-
+    output logic [63:0] cycle_out
 );
 
-    // SPI register base addresses
-    localparam [31:0] SPI_BASE_ADDR   = 32'h00001FF0;
-    localparam [31:0] SPI_DATA_ADDR   = SPI_BASE_ADDR;
-    localparam [31:0] SPI_CTRL_ADDR   = SPI_BASE_ADDR + 4;
-    localparam [31:0] SPI_STATUS_ADDR = SPI_BASE_ADDR + 8;
-    localparam [31:0] SPI_DC_ADDR     = SPI_BASE_ADDR + 12;
-	
     logic branch_mispredicted;
     logic branch_taken;
 
@@ -128,10 +112,6 @@ module rv32_mem (
     assign data_address_out = {result_in[31:2], 2'b0};
     assign data_read_out = read_in && !mem_misaligned;
     assign data_write_out = write_in && !mem_misaligned;
-    assign data_address_out = {result_in[31:2], 2'b0};
-	
-	logic spi_selected;
-    assign spi_selected = result_in >= SPI_BASE_ADDR && result_in < (SPI_BASE_ADDR + 16);
 
     always_comb begin
         case (width_in)
@@ -141,9 +121,7 @@ module rv32_mem (
             default:              mem_misaligned = 1'bx;
         endcase
 
-       
-        /* write port */
-        if (write_in && !spi_selected) begin
+        if (write_in) begin
             case (width_in)
                 `RV32_MEM_WIDTH_WORD: begin
                     data_write_value_out = rs2_value_in;
@@ -187,78 +165,44 @@ module rv32_mem (
         end
 
         if (read_in) begin
-            if (result_in == SPI_STATUS_ADDR) begin
-                read_value = {30'b0, spi_done, spi_busy};
-                read_mask = 4'b1111;
-            end else begin
-                case (width_in)
-                    `RV32_MEM_WIDTH_WORD: begin
-                        read_value = data_read_value_in;
-                        read_mask = 4'b1111;
-                    end
-                    `RV32_MEM_WIDTH_HALF: begin
-                        case (result_in[1])
-                            1'b0: begin
-                                read_value = {{16{zero_extend_in ? 1'b0 : data_read_value_in[15]}}, data_read_value_in[15:0]};
-                                read_mask = 4'b0011;
-                            end
-                            1'b1: begin
-                                read_value = {{16{zero_extend_in ? 1'b0 : data_read_value_in[31]}}, data_read_value_in[31:16]};
-                                read_mask = 4'b1100;
-                            end
-                        endcase
-                    end
-                    `RV32_MEM_WIDTH_BYTE: begin
-                        case (result_in[1:0])
-                            2'b00: begin
-                                read_value = {{24{zero_extend_in ? 1'b0 : data_read_value_in[7]}},  data_read_value_in[7:0]};
-                                read_mask = 4'b0001;
-                            end
-                            2'b01: begin
-                                read_value = {{24{zero_extend_in ? 1'b0 : data_read_value_in[15]}}, data_read_value_in[15:8]};
-                                read_mask = 4'b0010;
-                            end
-                            2'b10: begin
-                                read_value = {{24{zero_extend_in ? 1'b0 : data_read_value_in[23]}}, data_read_value_in[23:16]};
-                                read_mask = 4'b0100;
-                            end
-                            2'b11: begin
-                                read_value = {{24{zero_extend_in ? 1'b0 : data_read_value_in[31]}}, data_read_value_in[31:24]};
-                                read_mask = 4'b1000;
-                            end
-                        endcase
-                    end
-                    default: begin
-                        read_value = 32'bx;
-                        read_mask = 4'bx;
-                    end
-                endcase
-            end
+            case (width_in)
+                `RV32_MEM_WIDTH_WORD: begin
+                    read_value = data_read_value_in;
+                    read_mask = 4'b1111;
+                end
+                `RV32_MEM_WIDTH_HALF: begin
+                    case (result_in[1])
+                        1'b0: read_value = {{16{zero_extend_in ? 1'b0 : data_read_value_in[15]}}, data_read_value_in[15:0]};
+                        1'b1: read_value = {{16{zero_extend_in ? 1'b0 : data_read_value_in[31]}}, data_read_value_in[31:16]};
+                    endcase
+                    read_mask = (result_in[1]) ? 4'b1100 : 4'b0011;
+                end
+                `RV32_MEM_WIDTH_BYTE: begin
+                    case (result_in[1:0])
+                        2'b00: read_value = {{24{zero_extend_in ? 1'b0 : data_read_value_in[7]}}, data_read_value_in[7:0]};
+                        2'b01: read_value = {{24{zero_extend_in ? 1'b0 : data_read_value_in[15]}}, data_read_value_in[15:8]};
+                        2'b10: read_value = {{24{zero_extend_in ? 1'b0 : data_read_value_in[23]}}, data_read_value_in[23:16]};
+                        2'b11: read_value = {{24{zero_extend_in ? 1'b0 : data_read_value_in[31]}}, data_read_value_in[31:24]};
+                    endcase
 
+                    case (result_in[1:0])
+                        2'b00: read_mask = 4'b0001;
+                        2'b01: read_mask = 4'b0010;
+                        2'b10: read_mask = 4'b0100;
+                        2'b11: read_mask = 4'b1000;
+                    endcase
+                end
+                default: begin
+                    read_value = 32'bx;
+                    read_mask = 4'bx;
+                end
+            endcase
         end else begin
             read_value = 32'bx;
             read_mask = 4'b0;
         end
     end
 
-    always_ff @(posedge clk) begin
-        if (!stall_in && valid_in && !flush_in) begin
-            if (write_in && spi_selected) begin
-                case (result_in)
-                    SPI_DATA_ADDR:   spi_data_out <= rs2_value_in[7:0];
-                    SPI_CTRL_ADDR:   spi_start    <= 1'b1;
-                    SPI_DC_ADDR:     spi_dc       <= rs2_value_in[0];
-                    default:;
-                endcase
-            end else begin
-                spi_start <= 1'b0;
-            end
-        end else begin
-            spi_start <= 1'b0;
-        end
-    end
-
-    /* traps */
     logic exception;
     logic [3:0] exception_cause;
     logic mem_exception;
