@@ -1,7 +1,6 @@
 module spi_controller #(
   // Number of system clocks for one half period of SPI clock.
   parameter integer SPI_DIV = 4,
-
   parameter integer DIV_WIDTH = 2
 )(
   input  logic         clk,         // system clock
@@ -23,30 +22,32 @@ module spi_controller #(
   output logic         lcd_dc       
 );
 
-  //-------------------------------------------------------------------------
-  // State machine declaration
-  //-------------------------------------------------------------------------
-localparam 	IDLE         = 2'b00,
-			TRANSFER_LOW = 2'b01, // SPI clock low phase: output current bit on MOSI
-			TRANSFER_HIGH= 2'b10, // SPI clock high phase: wait half period
-			FINISH       = 2'b11;  // End of transaction
-  
- logic [1:0] state;
+  localparam  IDLE         = 2'b00,
+              TRANSFER_LOW = 2'b01,
+              TRANSFER_HIGH= 2'b10,
+              FINISH       = 2'b11;
 
-  //-------------------------------------------------------------------------
-  // Internal registers
-  //-------------------------------------------------------------------------
-  logic [DIV_WIDTH-1:0] counter;   // Counts down to generate SPI halfâ€“period
-  logic [3:0]           bit_cnt;   // Bit counter (8 bit transfer)
-  logic [7:0]           shift_reg; // Holds the byte to be shifted out
-  logic                 lcd_dc_reg;// Latches the spi_dc flag
+  logic [1:0] state;
+  logic [DIV_WIDTH-1:0] counter;
+  logic [3:0]           bit_cnt;
+  logic [7:0]           shift_reg;
+  logic                 lcd_dc_reg;
+  logic                 start_latched;
 
-  // Drive the LCD DC signal from our internal register.
   assign lcd_dc = lcd_dc_reg;
 
-  //-------------------------------------------------------------------------
-  // SPI Master State Machine (Transmit Only)
-  //-------------------------------------------------------------------------
+  // Latch the spi_start pulse
+  always_ff @(posedge clk or negedge reset_n) begin
+    if (!reset_n) begin
+      start_latched <= 1'b0;
+    end else begin
+      if (state == IDLE && spi_start && !spi_busy)
+        start_latched <= 1'b1;
+      else if (state != IDLE)
+        start_latched <= 1'b0;
+    end
+  end
+
   always_ff @(posedge clk or negedge reset_n) begin
     if (!reset_n) begin
       state       <= IDLE;
@@ -59,80 +60,59 @@ localparam 	IDLE         = 2'b00,
       bit_cnt     <= 4'd0;
       shift_reg   <= 8'd0;
       lcd_dc_reg  <= 1'b0;
-    end
-    else begin
+    end else begin
       case (state)
-        //===============================================================
-        // IDLE: Wait for a start pulse to begin transmission.
-        //===============================================================
         IDLE: begin
-          spi_done <= 1'b0;      // Clear done flag
+          spi_clk  <= 1'b0;
+          spi_cs_n <= 1'b1;
+          spi_done <= 1'b0;
           spi_busy <= 1'b0;
-          spi_cs_n <= 1'b1;      // Chip select inactive
-          spi_clk  <= 1'b0;      // SPI clock idle low
-          spi_mosi <= 1'b0;
-          if (spi_start) begin
-            // Latch input data and control signals.
+
+          if (start_latched && !spi_busy) begin
             shift_reg   <= spi_data_in;
-            bit_cnt     <= 4'd8;       // 8 bits to transfer
-            lcd_dc_reg  <= spi_dc;       // Latch the DC flag for LCD control
+            bit_cnt     <= 4'd8;
+            lcd_dc_reg  <= spi_dc;
+            spi_cs_n    <= 1'b0;
             spi_busy    <= 1'b1;
-            spi_cs_n    <= 1'b0;       // Assert chip select (active low)
             counter     <= SPI_DIV - 1;
             state       <= TRANSFER_LOW;
           end
         end
 
-        //===============================================================
-        // TRANSFER_LOW: With the SPI clock low, output the MSB on MOSI.
-        //===============================================================
         TRANSFER_LOW: begin
           spi_clk  <= 1'b0;
           spi_mosi <= shift_reg[7];
           if (counter == 0) begin
-            // After the halfâ€“period, raise the clock.
             spi_clk <= 1'b1;
             counter <= SPI_DIV - 1;
             state   <= TRANSFER_HIGH;
-          end
-          else begin
+          end else begin
             counter <= counter - 1;
           end
         end
 
-        //===============================================================
-        // TRANSFER_HIGH: SPI clock remains high for a half period.
-        // After the period, update bit counter and shift register.
-        //===============================================================
         TRANSFER_HIGH: begin
           spi_clk <= 1'b1;
           if (counter == 0) begin
             if (bit_cnt == 1) begin
-              // Last bit has been transmitted.
               bit_cnt <= 4'd0;
               state   <= FINISH;
-            end
-            else begin
-              // Shift the data left to bring next bit to MSB.
+            end else begin
               bit_cnt   <= bit_cnt - 1;
-              shift_reg <= shift_reg << 1'b1;
+              shift_reg <= shift_reg << 1;
               counter   <= SPI_DIV - 1;
               state     <= TRANSFER_LOW;
             end
-          end
-          else begin
+          end else begin
             counter <= counter - 1;
           end
         end
 
-        //===============================================================
-        // FINISH: Transaction complete. Deassert CS and generate done pulse.
-        //===============================================================
         FINISH: begin
           spi_cs_n <= 1'b1;
           spi_clk  <= 1'b0;
           spi_busy <= 1'b0;
-          spi_done <= 1'b1; // One cycle done pulse
+          spi_done <= 1'b1;
           state    <= IDLE;
         end
 
