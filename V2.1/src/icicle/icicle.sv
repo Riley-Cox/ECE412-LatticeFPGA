@@ -5,6 +5,7 @@
 `include "timer.sv"
 `include "uart.sv"
 `include "spi.sv"
+`include "spi_mem.sv" 
 
 `ifdef ECP5
 `define RAM_SIZE 8192
@@ -39,21 +40,13 @@ module icicle (
 
     input  uart_rx,
     output logic uart_tx,
-    output logic flash_csn,
-
-    /* SPI */
-    output logic spi_clk,
-    output logic spi_mosi,
-    output logic spi_cs_n,
-    output logic lcd_dc
-);
-
 
     output logic spi_clk,
     output logic spi_mosi,
     output logic spi_cs_n,
     output logic lcd_dc
 );
+
     logic [31:0] instr_address;
     logic instr_read;
     logic [31:0] instr_read_value;
@@ -77,16 +70,9 @@ module icicle (
     logic [31:0] mem_write_value;
     logic mem_ready;
     logic mem_fault;
-	
-    /* SPI memory bus*/
-    logic spi_start;
-    logic [7:0] spi_data_out;
-    logic spi_dc;
-    logic spi_busy;
-    logic spi_done;
 
-    assign mem_read_value = ram_read_value | leds_read_value | uart_read_value | timer_read_value | flash_read_value;
-    assign mem_ready = ram_ready | leds_ready | uart_ready | timer_ready | flash_ready | mem_fault;
+    assign mem_read_value = ram_read_value | leds_read_value | uart_read_value | timer_read_value | flash_read_value | spi_read_value;
+    assign mem_ready = ram_ready | leds_ready | uart_ready | timer_ready | flash_ready | spi_ready | mem_fault;
 
 
     bus_arbiter bus_arbiter (
@@ -141,24 +127,10 @@ module icicle (
         .data_ready_in(data_ready),
         .data_fault_in(data_fault),
 
-
-        /* timer */
-        .cycle_out(cycle),
-
-	/* SPI */
-	.spi_start(spi_start),
-	.spi_data_out(spi_data_out),
-	.spi_dc(spi_dc),
-	.spi_busy(spi_busy),
-	.spi_done(spi_done)
+        .cycle_out(cycle)
     );
 
-
-    logic ram_sel;
-    logic leds_sel;
-    logic uart_sel;
-    logic timer_sel;
-    logic flash_sel;
+    logic ram_sel, leds_sel, uart_sel, timer_sel, flash_sel, spi_sel;
 
 
     always_comb begin
@@ -169,15 +141,15 @@ module icicle (
         flash_sel = 0;
         spi_sel = 0;
         mem_fault = 0;
-	
 
         casez (mem_address)
-            32'b00000000_00000000_????????_????????: ram_sel = 1;
-            32'b00000000_00000001_00000000_000000??: leds_sel = 1;
-            32'b00000000_00000010_00000000_0000????: uart_sel = 1;
-            32'b00000000_00000011_00000000_0000????: timer_sel = 1;
-            32'b00000001_????????_????????_????????: flash_sel = 1;
-            default:                                 mem_fault = 1;
+            32'b00000000_00000000_????????_????????:           ram_sel = 1;
+            32'b00000000_00000001_00000000_000000??:           leds_sel = 1;
+            32'b00000000_00000010_00000000_0000????:           uart_sel = 1;
+            32'b00000000_00000011_00000000_0000????:           timer_sel = 1;
+            32'b00000001_????????_????????_????????:           flash_sel = 1;
+            32'b00000000_00000100_0001????_????????:           spi_sel = 1; 
+            default:                                           mem_fault = 1;
         endcase
     end
 
@@ -241,33 +213,8 @@ module icicle (
         .ready_out(timer_ready)
     );
 
-
-    spi_controller spi (
-	.clk(clk),
-	.reset_n(~reset),
-	
-	// Processor Interface
-	.spi_start(spi_start),
-	.spi_data_in(spi_data_out),
-	.spi_dc(spi_dc),
-	.spi_busy(spi_busy),
-	.spi_done(spi_done),
-	
-	// SPI pins
-	.spi_clk(spi_clk),
-	.spi_mosi(spi_mosi),
-	.spi_cs_n(spi_cs_n),
-
-	// LCD control signal
-	.lcd_dc(lcd_dc)
-    );
-
-
     logic [31:0] flash_read_value;
     logic flash_ready;
-
-    
-
 
 `ifdef SPI_FLASH
     flash flash (
@@ -297,9 +244,9 @@ module icicle (
     logic [31:0] spi_read_value;
     logic spi_ready;
 
-    spi_controller spi (
-	.clk(clk),
-        .reset_n(~reset),
+    spi_mem spi_controller (
+        .clk(clk),
+        .reset(reset),
         .address_in(mem_address),
         .sel_in(spi_sel),
         .read_in(mem_read),
