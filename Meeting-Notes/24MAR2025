@@ -1,0 +1,22 @@
+Meeting Notes 24MAR2025
+
+Last week was finals week, this week spring break. Come up with plan for documentation and integration. Use this week to get ahead.
+
+Mohammad:
+  Integration for SPI - start getting the SPI module into the RISC-V package, take notes on potentially adding in a UART-activated SPI as well
+
+Xiang:
+  Documentation - Nathan to loop in on conversations with Rahul, Roy, and Andrew on the user guide requirements
+
+HaoYang:
+  Make test circuits - need to physically wire debounced buttons so we can test PWM/button SV modules
+
+Riley:
+  Assist with integration as needed.
+  Add conditional compilation so we have one source for both Radiant and Yosys
+  Send notes to Mohammad to test Yosys-synth SPI module for unit test
+
+Nathan:
+  Integrate PWM and button modules. Starting today, use process as integration template for other modules. 
+
+Riley was late. Nathan to have offline discussion to address. 

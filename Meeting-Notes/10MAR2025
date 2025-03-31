@@ -1,0 +1,25 @@
+Meeting Notes 10MAR2025
+
+Mohammad:
+Still experiencing clock issues with implementation. Currently researching the SB_IO primitive to see if that fixes the issue
+
+Riley:
+Waiting for integration 
+Talked with Nathan about starting Yosys Integration
+
+
+Haoyang:
+Not in attendance
+
+Xiang:
+Just finished writing preliminary C-code for color changing and Screen Initialization
+
+Nathan:
+- Helped Mohammad with clock issue
+
+ToDo:
+Begin Yosys integration
+Debug Clock Issue
+Do preliminary work on remaining integration
+Try to get more experience with the Radiant tolchain as we get into Spring term
+Will test with code provided by Roy to see if the clock issue persists in his code as well

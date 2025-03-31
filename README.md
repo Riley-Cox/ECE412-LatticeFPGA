@@ -30,19 +30,20 @@ sudo pacman -Syu autoconf automake curl python3 libmpc mpfr gmp gawk base-devel 
 - From your home directory, clone the RISC-V GNU toolchain from the following repo 
 
   ```
-  git clone https://github.com/riscv/riscv-gnu-toolchain
+  git clone --recursive https://github.com/riscv/riscv-gnu-toolchain
   ```
-  
-- `cd` into the directory, run
-  ```
-  ./configure --prefix=<writeable directory>
-  ```
-  then run `make` (This will take a long time)
+
 - From your home directory, open your shell rc file to edit (`vim .zshrc` or `vim .bashrc`) and add
   ```
   export PATH="<writeable directory>:$PATH"
   ```
 - Then run `source .zshrc` if using zsh or `source .bashrc` if using bash
+  
+- `cd` into the riscv-gnu-toolchain directory, run
+  ```
+  ./configure --prefix=<writeable directory>
+  ```
+- then run `make -j$(nproc)`
   
   
 ## Open Source Toolchain Setup
@@ -61,7 +62,8 @@ sudo dnf install yosys icestorm nextpnr
 
 
 ## Building on the UPduino board
-- Navigate to `/icicle`
+- Clone this repo
+- Navigate to `V2.1/src/icicle`
 - Run `make clean`
 - Run `make BOARD=upduino`
 - Run `sudo iceprog top.bin`
