@@ -1,0 +1,35 @@
+Meeting Notes 28MAR2025
+
+Mohammad: Sick, not attending. SPI notes in Riley's section. Notes from Mohammad:
+  We started working on integrating the SPI controller into the icicle core yesterday. The first thing we did was modify the rv32_mem.sv module so that it could detect reads and writes to a specific range of addresses, from 0x80000000 to 0x8000000C. Each of these addresses was used for a different part of the SPI interface—one for writing data, one for triggering a transfer, one for setting the data/command (DC) flag, and one for checking the status of the controller (like if it was busy or done). We also added logic to handle new control signals like spi_start, spi_data_out, and spi_dc, as well as inputs for spi_busy and spi_done.
+In rv32.sv, we declared these signals and wired them between the rv32_mem stage and the top level of the rv32 module so that they could be passed up to icicle.sv. Then in icicle.sv, we instantiated the spi_controller module and connected those signals to it. The controller takes the signals from the CPU and generates the actual SPI output lines—spi_clk, spi_mosi, spi_cs_n, and lcd_dc. We added those as output ports in the icicle module and passed them through the top.sv module so they can be used as physical pins on the board.
+To test everything, we wrote a small C program that sends a single byte over SPI. It sets the DC flag, writes the byte to the data register, triggers the transfer, and then waits until the controller finishes
+
+Remaining work left to do:
+Debug our current implementation as the signals are currently not acting correctly when viewed in the logic analyzer
+To do so, I think we should take a second look in how we implemented everything, and make sure our signals are connected how we intend. If they are, we should examine if our reset is being handled correctly. As currently implemented, the spi_controller is expecting a negedge for the reset signal. My thought is that if it is being held outside of that reset state, is the behavior being correctly interpreted as there are no transitions
+
+Riley:
+  Instantiation is working
+  No synthesis errors
+  edits to rv32_mem and rv32 to add register locations to trigger 
+  Created own infrastructure to get to SPI module; will need to dig into this implementation to deal with issues
+  Signal isn't working; single clock pulse issue again. Starting with SPI integration technique
+
+Xiang:
+  No updates, been busy with report for internship
+  Needs to add steps for SPI Unit testing - work with Mohammad
+  Need to add steps for SPI integrated testing - TBD, integration not complete
+  Add screenshots - windows store for distro, terminal application, hello world output, logic analyzer setup, etc.
+
+Nathan:
+  Radiant and Icicle are not getting along - Rahul mentioned possibly going to the Radiant IP for RV core. 
+  Issue could be with register pruning, SPI tests show that doesn't impact performance; may be simulation only?
+  PC register initialization may be ignored, preventing us from being able to read instructions from memory
+  May try to find a way to change LED memory values to control LEDs to verify anything is happening
+  Can't simulate, need to troubleshoot that
+
+Haoyang:
+  Working on getting our enclosure able to open/close without breaking it. Clamshell design in a heart shape.
+  Use clamps on non-hinge end? at three points to eliminate hinge entirely?
+  Going to work on setting up debounce hardware for buttons so it doesn't need implemented on the FPGA or in software
