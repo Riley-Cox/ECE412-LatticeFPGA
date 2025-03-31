@@ -1,0 +1,25 @@
+Meeting Notes 31MAR2025
+
+Riley:
+  Finish SPI integration
+  Start on button integration on Yosys
+  Pending Nathan's conversation with Roy, start working on Icicle migration to Radiant OR using Radiant RV32 IP
+
+Mohammad:
+  Fixed SPI implementation - used mem case statement, on new branch
+  Going to try to check with better logic analyzer - going to EPL for this
+
+Xiang:
+  Draft SPI V&V plan, just structure for now
+  Will work with Mohammad on filling structure out
+
+HaoYang:
+  Continued 3D modeling
+  Research button circuit options
+  Will get schematics to Nathan by Wednesday
+
+Nathan:
+  Spent the weekend cleaning up GitHub branches, issue tracking, and getting ready to implement new GitHub guidelines
+
+
+Moving forward, new github guidelines will be put in place to help collaboration be more smooth. Issues will be tracked on GitHub, branch naming conventions, pushing regularly, etc.
