@@ -5,7 +5,6 @@
 `include "timer.sv"
 `include "uart.sv"
 `include "spi.sv"
-`include "spi_mem.sv" 
 
 `ifdef ECP5
 `define RAM_SIZE 8192
@@ -244,9 +243,9 @@ module icicle (
     logic [31:0] spi_read_value;
     logic spi_ready;
 
-    spi_mem spi_controller (
-        .clk(clk),
-        .reset(reset),
+    spi_controller spi (
+	.clk(clk),
+        .reset_n(~reset),
         .address_in(mem_address),
         .sel_in(spi_sel),
         .read_in(mem_read),
