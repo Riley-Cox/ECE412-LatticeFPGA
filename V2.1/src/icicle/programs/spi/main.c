@@ -10,7 +10,7 @@
 #define mssg_2    (*(volatile uint32_t*)) 0x0004110C)
 
 //macros to access status bits
-#define SPI_BUSY     (SPI_STATUS & 0x01)
+#define SPI_BUSY     *(volatile uint32_t*)(SPI_STATUS & 0x01)
 
 void spi_send(uint8_t byte, uint8_t dc_flag) {
     SPI_DC = dc_flag;         // Set data/command
