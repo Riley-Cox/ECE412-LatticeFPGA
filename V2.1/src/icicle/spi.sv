@@ -1,10 +1,9 @@
 module spi_controller #(
-  // Number of system clocks for one half period of SPI clock.
-  parameter integer SPI_DIV = 4,
-  parameter integer DIV_WIDTH = 2
+  parameter integer SPI_DIV = 32,
+  parameter integer DIV_WIDTH = 6
 )(
-  input  logic         clk,         // system clock
-  input  logic         reset_n,     // active-low reset
+  input  logic         clk,
+  input  logic         reset_n,
 
   // Memory bus interface
   input  logic [31:0]  address_in,
@@ -22,104 +21,54 @@ module spi_controller #(
   output logic         lcd_dc
 );
 
-  // SPI register addresses (offsets)
   localparam SPI_DATA_ADDR   = 32'h00000000;
   localparam SPI_CTRL_ADDR   = 32'h00000004;
   localparam SPI_STATUS_ADDR = 32'h00000008;
   localparam SPI_DC_ADDR     = 32'h0000000C;
 
-  localparam  IDLE         = 2'b00,
-              TRANSFER_LOW = 2'b01,
-              TRANSFER_HIGH= 2'b10,
-              FINISH       = 2'b11;
+  localparam IDLE         = 2'b00,
+             TRANSFER_LOW = 2'b01,
+             TRANSFER_HIGH= 2'b10,
+             FINISH       = 2'b11;
 
   logic [1:0] state;
   logic [DIV_WIDTH-1:0] counter;
   logic [3:0]           bit_cnt;
   logic [7:0]           shift_reg;
-  logic [7:0]           data_reg;
   logic                 lcd_dc_reg;
   logic                 start_latched;
-  logic                 spi_start;
   logic                 spi_busy;
   logic                 spi_done;
+  logic                 spi_done_ack;
 
-  assign lcd_dc = lcd_dc_reg;
-
-  // Reset delay logic
-  logic [3:0] reset_counter = 0;
-  logic internal_reset_n;
-
-  always_ff @(posedge clk or negedge reset_n) begin
-    if (!reset_n)
-      reset_counter <= 0;
-    else if (!&reset_counter)
-      reset_counter <= reset_counter + 1;
-  end
-
-  assign internal_reset_n = &reset_counter;
-
-  // Pulse generation for spi_start
-  logic last_write_sel;
-  logic write_sel;
+  logic [7:0] data_reg;
   logic [31:0] offset;
   assign offset = address_in & 32'h0000000F;
 
-  always_ff @(posedge clk or negedge internal_reset_n) begin
-    if (!internal_reset_n) begin
-      spi_start <= 1'b0;
+  assign lcd_dc = lcd_dc_reg;
+
+  // Write detection logic
+  logic write_sel;
+  logic last_write_sel;
+  assign write_sel = (sel_in && |write_mask_in && offset == SPI_CTRL_ADDR);
+
+  // Rising edge detection and start gating
+  always_ff @(posedge clk or negedge reset_n) begin
+    if (!reset_n) begin
       last_write_sel <= 1'b0;
+      start_latched  <= 1'b0;
     end else begin
-      write_sel <= (sel_in && |write_mask_in && offset == SPI_CTRL_ADDR);
-      spi_start <= write_sel && !last_write_sel;
       last_write_sel <= write_sel;
-    end
-  end
-
-  // Write logic
-  always_ff @(posedge clk or negedge internal_reset_n) begin
-    if (!internal_reset_n) begin
-      data_reg <= 8'h00;
-      lcd_dc_reg <= 1'b0;
-    end else begin
-      if (sel_in && |write_mask_in) begin
-        case (offset)
-          SPI_DATA_ADDR: data_reg <= write_value_in[7:0];
-          SPI_DC_ADDR:   lcd_dc_reg <= write_value_in[0];
-          default: ;
-        endcase
-      end
-    end
-  end
-
-  // Read logic
-  always_comb begin
-    read_value_out = 32'h00000000;
-    if (sel_in && read_in) begin
-      case (offset)
-        SPI_STATUS_ADDR: read_value_out = {30'b0, spi_done, spi_busy};
-        default:          read_value_out = 32'h00000000;
-      endcase
-    end
-  end
-
-  assign ready_out = sel_in;
-
-  // Latch the spi_start pulse
-  always_ff @(posedge clk or negedge internal_reset_n) begin
-    if (!internal_reset_n) begin
-      start_latched <= 1'b0;
-    end else begin
-      if (state == IDLE && spi_start && !spi_busy)
+      if (write_sel && !last_write_sel && !spi_busy && !spi_done)
         start_latched <= 1'b1;
       else if (state != IDLE)
         start_latched <= 1'b0;
     end
   end
 
-  // SPI FSM
-  always_ff @(posedge clk or negedge internal_reset_n) begin
-    if (!internal_reset_n) begin
+  // Transaction FSM
+  always_ff @(posedge clk or negedge reset_n) begin
+    if (!reset_n) begin
       state       <= IDLE;
       spi_cs_n    <= 1'b1;
       spi_clk     <= 1'b0;
@@ -129,21 +78,26 @@ module spi_controller #(
       counter     <= '0;
       bit_cnt     <= 4'd0;
       shift_reg   <= 8'd0;
+      lcd_dc_reg  <= 1'b0;
     end else begin
       case (state)
         IDLE: begin
           spi_clk  <= 1'b0;
           spi_cs_n <= 1'b1;
-          spi_done <= 1'b0;
           spi_busy <= 1'b0;
 
-          if (start_latched && !spi_busy) begin
+          if (start_latched) begin
             shift_reg   <= data_reg;
             bit_cnt     <= 4'd8;
             spi_cs_n    <= 1'b0;
             spi_busy    <= 1'b1;
             counter     <= SPI_DIV - 1;
             state       <= TRANSFER_LOW;
+            spi_done    <= 1'b0;
+          end else if (!spi_done_ack) begin
+            spi_done <= spi_done;
+          end else begin
+            spi_done <= 1'b0;
           end
         end
 
@@ -163,8 +117,7 @@ module spi_controller #(
           spi_clk <= 1'b1;
           if (counter == 0) begin
             if (bit_cnt == 1) begin
-              bit_cnt <= 4'd0;
-              state   <= FINISH;
+              state <= FINISH;
             end else begin
               bit_cnt   <= bit_cnt - 1;
               shift_reg <= shift_reg << 1;
@@ -188,5 +141,40 @@ module spi_controller #(
       endcase
     end
   end
+
+  // Register interface
+  always_ff @(posedge clk or negedge reset_n) begin
+    if (!reset_n) begin
+      data_reg <= 8'h00;
+      lcd_dc_reg <= 1'b0;
+    end else if (sel_in && |write_mask_in) begin
+      case (offset)
+        SPI_DATA_ADDR:   data_reg <= write_value_in[7:0];
+        SPI_DC_ADDR:     lcd_dc_reg <= write_value_in[0];
+        default: ;
+      endcase
+    end
+  end
+
+  // Acknowledge done signal when CPU reads SPI_STATUS
+  always_ff @(posedge clk or negedge reset_n) begin
+    if (!reset_n)
+      spi_done_ack <= 1'b0;
+    else
+      spi_done_ack <= (sel_in && read_in && offset == SPI_STATUS_ADDR);
+  end
+
+  // Read logic
+  always_comb begin
+    read_value_out = 32'h00000000;
+    if (sel_in && read_in) begin
+      case (offset)
+        SPI_STATUS_ADDR: read_value_out = {30'b0, spi_done, spi_busy};
+        default:          read_value_out = 32'h00000000;
+      endcase
+    end
+  end
+
+  assign ready_out = sel_in;
 
 endmodule
