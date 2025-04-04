@@ -16,11 +16,11 @@ Pull requests are the best way to propose changes to the codebase (we use [Githu
 1. Fork the repo and create your branch from `main`.
 2. Name the branch according to what you are adding; feat/ for feature, test/ for tests, docs/ for documentation with a name that describes the addition.
      - Example: feat/NewImages
-4. If you've added code that should be tested, add tests.
-5. If you've changed APIs, update the documentation.
-6. Ensure the test suite passes.
-7. Make sure your code lints.
-8. Issue that pull request!
+3. If you've added code that should be tested, add tests.
+4. If you've changed APIs, update the documentation.
+5. Ensure the test suite passes.
+6. Make sure your code lints.
+7. Issue that pull request!
 
 ## Any contributions you make will be under the GPL-3.0 Software License
 In short, when you submit code changes, your submissions will be understood to be under the same [GPL-3.0 License](https://choosealicense.com/licenses/gpl-3.0/) that covers the project. Feel free to contact the maintainers if that's a concern.
