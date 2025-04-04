@@ -1,0 +1,13 @@
+Meeting Notes 04APRIL2025
+
+Riley: Worked on troubleshooting Raidant, no progress. Helping figure out SPI issue.Created GitHub Guideline document.
+	Will continue to work on fixing SPI issue. 
+
+Xiang: Worked on docmentation, creating bug report template
+	For next week is willing to grab an issue that isn't being worked on.
+
+Mohammad: Rolled in wrapper back into the spi.sv file, still having constant trigger issue. Will continue to work on figuring this out, making unit test.
+
+Nathan: Worked on GitHub Guideline document, worked on Radiant integration with no progress, helped look through SPI issue.
+
+Haoyang: Designed push button circuit, is ready for implementation and testing. Continuing to work on box 3D design.
