@@ -136,20 +136,18 @@ module spi_controller #(
         end
       end
       TRANSFER_LOW: begin
+        spi_clk = 1'b1;
         spi_mosi = shift_reg[7];
         spi_done = 1'b0;
         spi_busy = 1'b1;
         spi_cs_n = 1'b0;
-        spi_clk = 1'b0;
-        if(counter == 0)
-          spi_clk = 1'b1;
       end
       TRANSFER_HIGH: begin
-        spi_clk = 1'b1;
-        spi_mosi = '0;
+        spi_clk = 1'b0;
         spi_done = 1'b0;
         spi_busy = 1'b1;
         spi_cs_n = 1'b0;
+        spi_mosi = '0;
       end
       FINISH: begin
           spi_cs_n = 1'b1;
