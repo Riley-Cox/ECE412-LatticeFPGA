@@ -1,5 +1,5 @@
 module spi_controller #(
-  parameter logic [5:0] SPI_DIV = 32,
+  parameter logic [5:0] SPI_DIV = 4,
   parameter integer DIV_WIDTH = 6
 )(
   input  logic         clk,
@@ -96,8 +96,9 @@ module spi_controller #(
       shift_reg <= data_reg;
     else if(state == TRANSFER_HIGH) begin
       if (counter == 0) begin
-        if ((shift_reg << 1) != 0)
+        if ((shift_reg << 1) != 0) begin
           shift_reg <= shift_reg << 1;
+          end
         else begin
           shift_reg <= shift_reg;
         end
@@ -124,7 +125,7 @@ module spi_controller #(
           spi_clk = '0;
           spi_mosi = '0;
           spi_cs_n = 1'b0;
-          spi_busy = 1'b1;
+          spi_busy = 1'b0;
         end
         else begin
           spi_done = 1'b0;
