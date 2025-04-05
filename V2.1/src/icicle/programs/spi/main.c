@@ -18,7 +18,8 @@ void spi_send(uint8_t byte, uint8_t dc_flag) {
     SPI_CTRL = 1;             // Trigger send
 
     // Wait for SPI to finish
-    while (*(volatile uint32_t *)SPI_STATUS & 0x1);  // Wait for spi_done = 1);
+    while (SPI_STATUS & 0x1);  // Wait for spi_done = 1
+    SPI_CTRL = 0;
 }
 
 int main() {

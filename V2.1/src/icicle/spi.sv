@@ -1,5 +1,5 @@
 module spi_controller #(
-  parameter integer SPI_DIV = 32,
+  parameter logic [5:0] SPI_DIV = 32,
   parameter integer DIV_WIDTH = 6
 )(
   input  logic         clk,
@@ -31,7 +31,7 @@ module spi_controller #(
              TRANSFER_HIGH= 2'b10,
              FINISH       = 2'b11;
 
-  logic [1:0] state;
+  logic [1:0] state, nextState;
   logic [DIV_WIDTH-1:0] counter;
   logic [3:0]           bit_cnt;
   logic [7:0]           shift_reg;
@@ -66,81 +66,137 @@ module spi_controller #(
     end
   end
 
-  // Transaction FSM
   always_ff @(posedge clk or negedge reset_n) begin
     if (!reset_n) begin
-      state       <= IDLE;
-      spi_cs_n    <= 1'b1;
-      spi_clk     <= 1'b0;
-      spi_busy    <= 1'b0;
-      spi_done    <= 1'b0;
-      spi_mosi    <= 1'b0;
-      counter     <= '0;
-      bit_cnt     <= 4'd0;
-      shift_reg   <= 8'd0;
-      lcd_dc_reg  <= 1'b0;
-    end else begin
-      case (state)
-        IDLE: begin
-          spi_clk  <= 1'b0;
-          spi_cs_n <= 1'b1;
-          spi_busy <= 1'b0;
-
-          if (start_latched) begin
-            shift_reg   <= data_reg;
-            bit_cnt     <= 4'd8;
-            spi_cs_n    <= 1'b0;
-            spi_busy    <= 1'b1;
-            counter     <= SPI_DIV - 1;
-            state       <= TRANSFER_LOW;
-            spi_done    <= 1'b0;
-          end else if (!spi_done_ack) begin
-            spi_done <= spi_done;
-          end else begin
-            spi_done <= 1'b0;
-          end
-        end
-
-        TRANSFER_LOW: begin
-          spi_clk  <= 1'b0;
-          spi_mosi <= shift_reg[7];
-          if (counter == 0) begin
-            spi_clk <= 1'b1;
-            counter <= SPI_DIV - 1;
-            state   <= TRANSFER_HIGH;
-          end else begin
-            counter <= counter - 1;
-          end
-        end
-
-        TRANSFER_HIGH: begin
-          spi_clk <= 1'b1;
-          if (counter == 0) begin
-            if (bit_cnt == 1) begin
-              state <= FINISH;
-            end else begin
-              bit_cnt   <= bit_cnt - 1;
-              shift_reg <= shift_reg << 1;
-              counter   <= SPI_DIV - 1;
-              state     <= TRANSFER_LOW;
-            end
-          end else begin
-            counter <= counter - 1;
-          end
-        end
-
-        FINISH: begin
-          spi_cs_n <= 1'b1;
-          spi_clk  <= 1'b0;
-          spi_busy <= 1'b0;
-          spi_done <= 1'b1;
-          state    <= IDLE;
-        end
-
-        default: state <= IDLE;
-      endcase
+      state <= IDLE;
+    end
+    else begin
+      state <= nextState;
     end
   end
+
+  always_ff @(posedge clk or negedge reset_n) begin
+    if (!reset_n) begin
+      counter <= SPI_DIV - 1;
+    end
+    else if (counter == 0) begin
+      counter <= SPI_DIV - 1;
+
+    end
+    else begin
+      counter <= counter - 1;
+    end
+  end
+
+
+  always_ff @(posedge clk or negedge reset_n) begin
+    if (!reset_n)begin
+      shift_reg <= '0;
+    end
+    else if(start_latched)
+      shift_reg <= data_reg;
+    else if(state == TRANSFER_HIGH) begin
+      if (counter == 0)
+        if ((shift_reg << 1) != 0)
+          shift_reg <= shift_reg << 1;
+    end
+  end
+
+
+  always_comb begin
+    unique case (state)
+      IDLE: begin
+        if (start_latched) begin
+          spi_cs_n = 1'b0;
+          spi_busy = 1'b1;
+          spi_done = 1'b0;
+          spi_clk = 1'b0;
+          spi_mosi = '0;
+        end        
+        else if(!spi_done_ack) begin
+          spi_done = 1'b0;
+          spi_clk = '0;
+          spi_mosi = '0;
+          spi_cs_n = 1'b0;
+          spi_busy = 1'b1;
+        end
+        else begin
+          spi_done = 1'b0;
+          spi_clk = '0;
+          spi_mosi = '0;
+          spi_busy = 1'b1;
+          spi_cs_n = 1'b0;
+        end
+      end
+      TRANSFER_LOW: begin
+        spi_mosi = data_reg[7];
+        spi_done = 1'b0;
+        spi_busy = 1'b1;
+        spi_cs_n = 1'b0;
+        spi_clk = 1'b0;
+        if(counter == 0)
+          spi_clk = 1'b1;
+      end
+      TRANSFER_HIGH: begin
+        spi_clk = 1'b1;
+        spi_mosi = '0;
+        spi_done = 1'b0;
+        spi_busy = 1'b1;
+        spi_cs_n = 1'b0;
+      end
+      FINISH: begin
+          spi_cs_n = 1'b1;
+          spi_clk  = 1'b0;
+          spi_busy = 1'b0;
+          spi_done = 1'b1;
+          spi_mosi = 1'b0;
+      end
+      default: begin
+        spi_cs_n = 1'b0;
+        spi_clk = 1'b0;
+        spi_mosi = 1'b0;
+        spi_done = 1'b0;
+        spi_busy = 1'b1;
+      end
+    endcase
+  end
+
+  // Transaction FSM
+  always_comb begin
+    unique case (state)
+        IDLE: begin
+          if (start_latched) begin
+            nextState   = TRANSFER_LOW;
+          end else begin
+            nextState = IDLE; 
+          end
+        end
+        TRANSFER_LOW: begin
+          if (counter == 0) begin
+            nextState  = TRANSFER_HIGH;
+          end
+          else begin
+            nextState = TRANSFER_LOW;
+          end
+        end
+        TRANSFER_HIGH: begin
+          if (counter == 0) begin
+            if ((data_reg << 1) == 0) begin
+              nextState = FINISH;
+            end else begin
+              nextState     = TRANSFER_LOW;
+            end
+        end
+        else begin
+          nextState = state;
+        end
+      end
+        FINISH: begin
+          nextState    = IDLE;
+        end
+        default: nextState = IDLE;
+      endcase
+    end
 
   // Register interface
   always_ff @(posedge clk or negedge reset_n) begin
