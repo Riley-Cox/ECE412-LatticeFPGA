@@ -136,7 +136,7 @@ module spi_controller #(
         end
       end
       TRANSFER_LOW: begin
-        spi_mosi = data_reg[7];
+        spi_mosi = shift_reg[7];
         spi_done = 1'b0;
         spi_busy = 1'b1;
         spi_cs_n = 1'b0;
