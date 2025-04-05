@@ -82,7 +82,7 @@ module spi_controller #(
       counter <= SPI_DIV - 1;
 
     end
-    else begin
+    else if (state == TRANSFER_LOW || state == TRANSFER_HIGH) begin
       counter <= counter - 1;
     end
   end
@@ -120,13 +120,13 @@ module spi_controller #(
           spi_clk = 1'b0;
           spi_mosi = '0;
         end        
-        else if(!spi_done_ack) begin
+/*        else if(!spi_done_ack) begin
           spi_done = 1'b0;
           spi_clk = '0;
           spi_mosi = '0;
           spi_cs_n = 1'b0;
           spi_busy = 1'b0;
-        end
+        end*/
         else begin
           spi_done = 1'b0;
           spi_clk = '0;
