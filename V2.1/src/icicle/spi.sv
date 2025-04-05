@@ -33,7 +33,6 @@ module spi_controller #(
 
   logic [1:0] state, nextState;
   logic [DIV_WIDTH-1:0] counter;
-  logic [3:0]           bit_cnt;
   logic [7:0]           shift_reg;
   logic                 lcd_dc_reg;
   logic                 start_latched;
@@ -59,10 +58,10 @@ module spi_controller #(
       start_latched  <= 1'b0;
     end else begin
       last_write_sel <= write_sel;
-      if (write_sel && !last_write_sel && !spi_busy && !spi_done)
-        start_latched <= 1'b1;
-      else if (state != IDLE)
+       if (state != IDLE)
         start_latched <= 1'b0;
+      else if (write_sel && !last_write_sel && !spi_busy && !spi_done)
+        start_latched <= 1'b1;
     end
   end
 
@@ -96,9 +95,16 @@ module spi_controller #(
     else if(start_latched)
       shift_reg <= data_reg;
     else if(state == TRANSFER_HIGH) begin
-      if (counter == 0)
+      if (counter == 0) begin
         if ((shift_reg << 1) != 0)
           shift_reg <= shift_reg << 1;
+        else begin
+          shift_reg <= shift_reg;
+        end
+      end
+      else begin
+        shift_reg <= shift_reg;
+      end
     end
   end
 
@@ -181,14 +187,14 @@ module spi_controller #(
         end
         TRANSFER_HIGH: begin
           if (counter == 0) begin
-            if ((data_reg << 1) == 0) begin
+            if ((shift_reg << 1) == 0) begin
               nextState = FINISH;
             end else begin
               nextState     = TRANSFER_LOW;
             end
         end
         else begin
-          nextState = state;
+          nextState = TRANSFER_HIGH;
         end
       end
         FINISH: begin
