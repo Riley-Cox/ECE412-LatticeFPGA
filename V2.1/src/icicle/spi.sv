@@ -187,10 +187,10 @@ module spi_controller #(
         end
         TRANSFER_HIGH: begin
           if (counter == 0) begin
-            if ((shift_reg << 1) == 0) begin
-              nextState = FINISH;
+            if ((shift_reg << 1) != 0) begin
+              nextState = TRANSFER_LOW;
             end else begin
-              nextState     = TRANSFER_LOW;
+              nextState     = FINISH;
             end
         end
         else begin
