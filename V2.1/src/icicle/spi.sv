@@ -1,5 +1,5 @@
 module spi_controller #(
-  parameter logic [5:0] SPI_DIV = 32,
+  parameter logic [5:0] SPI_DIV = 4,
   parameter integer DIV_WIDTH = 6
 )(
   input  logic         clk,
@@ -124,7 +124,7 @@ module spi_controller #(
           spi_clk = '0;
           spi_mosi = '0;
           spi_cs_n = 1'b0;
-          spi_busy = 1'b1;
+          spi_busy = 1'b0;
         end
         else begin
           spi_done = 1'b0;
