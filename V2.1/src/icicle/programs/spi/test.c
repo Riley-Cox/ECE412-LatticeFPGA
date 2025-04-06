@@ -15,8 +15,8 @@
 #define SPI_BUSY    (SPI_STATUS & 0x01)
 
 // === ST7735 Display Constants ===
-#define ST7735_TFTWIDTH  128
-#define ST7735_TFTHEIGHT 128
+#define ST7735_TFTWIDTH  160
+#define ST7735_TFTHEIGHT 160
 
 #define ST7735_SWRESET   0x01
 #define ST7735_SLPOUT    0x11
@@ -185,13 +185,13 @@ void st7735_init(void) {
     write_data(0x00);
     write_data(0x00);
     write_data(0x00);
-    write_data(0x7F);
+    write_data(0x9F);
 
     write_command(ST7735_RASET);
     write_data(0x00);
     write_data(0x00);
     write_data(0x00);
-    write_data(0x7F);
+    write_data(0x9F);
 
     uint8_t pos_gamma[16] = {
         0x02, 0x1C, 0x07, 0x12,
