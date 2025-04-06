@@ -131,8 +131,11 @@ void st7735_hardware_reset(void) {
 }
 
 void st7735_delay_ms(uint32_t ms) {
-    volatile uint32_t cycles = ms * 12000;
-    while (cycles--);
+    while (ms--) {
+        for (volatile uint32_t i = 0; i < 12000; i++) {
+            __asm__ volatile("nop");
+        }
+    }
 }
 
 /* ============================== */
