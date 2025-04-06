@@ -128,7 +128,7 @@ module spi_controller #(
           spi_done = 1'b0;
           spi_clk = '0;
           spi_mosi = '0;
-          spi_cs_n = 1'b0;
+          spi_cs_n = 1'b1;
           spi_busy = 1'b0;
         end
         else begin
@@ -136,7 +136,7 @@ module spi_controller #(
           spi_clk = '0;
           spi_mosi = '0;
           spi_busy = 1'b1;
-          spi_cs_n = 1'b0;
+          spi_cs_n = 1'b1;
         end
       end
       TRANSFER_LOW: begin
@@ -161,7 +161,7 @@ module spi_controller #(
           spi_mosi = 1'b0;
       end
       default: begin
-        spi_cs_n = 1'b0;
+        spi_cs_n = 1'b1;
         spi_clk = 1'b0;
         spi_mosi = 1'b0;
         spi_done = 1'b0;
