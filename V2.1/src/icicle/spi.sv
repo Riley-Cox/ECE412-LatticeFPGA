@@ -39,6 +39,7 @@ module spi_controller #(
   logic                 spi_busy;
   logic                 spi_done;
   logic                 spi_done_ack;
+  logic [3:0]           bitCounter;
 
   logic [7:0] data_reg;
   logic [31:0] offset;
@@ -82,7 +83,7 @@ module spi_controller #(
       counter <= SPI_DIV - 1;
 
     end
-    else begin
+    else if (state == TRANSFER_LOW || state == TRANSFER_HIGH) begin
       counter <= counter - 1;
     end
   end
@@ -92,13 +93,16 @@ module spi_controller #(
     if (!reset_n)begin
       shift_reg <= '0;
     end
-    else if(start_latched)
+    else if(start_latched) begin
       shift_reg <= data_reg;
+      bitCounter <= 4'd8;
+    end
     else if(state == TRANSFER_HIGH) begin
       if (counter == 0) begin
-        if ((shift_reg << 1) != 0) begin
+        if (bitCounter > 1) begin
           shift_reg <= shift_reg << 1;
-          end
+          bitCounter <= bitCounter - 1;
+        end
         else begin
           shift_reg <= shift_reg;
         end
@@ -124,7 +128,7 @@ module spi_controller #(
           spi_done = 1'b0;
           spi_clk = '0;
           spi_mosi = '0;
-          spi_cs_n = 1'b0;
+          spi_cs_n = 1'b1;
           spi_busy = 1'b0;
         end
         else begin
@@ -132,24 +136,22 @@ module spi_controller #(
           spi_clk = '0;
           spi_mosi = '0;
           spi_busy = 1'b1;
-          spi_cs_n = 1'b0;
+          spi_cs_n = 1'b1;
         end
       end
       TRANSFER_LOW: begin
-        spi_mosi = data_reg[7];
+        spi_clk = 1'b0;
+        spi_mosi = shift_reg[7];
         spi_done = 1'b0;
         spi_busy = 1'b1;
         spi_cs_n = 1'b0;
-        spi_clk = 1'b0;
-        if(counter == 0)
-          spi_clk = 1'b1;
       end
       TRANSFER_HIGH: begin
         spi_clk = 1'b1;
-        spi_mosi = '0;
         spi_done = 1'b0;
         spi_busy = 1'b1;
         spi_cs_n = 1'b0;
+        spi_mosi = shift_reg[7];
       end
       FINISH: begin
           spi_cs_n = 1'b1;
@@ -159,7 +161,7 @@ module spi_controller #(
           spi_mosi = 1'b0;
       end
       default: begin
-        spi_cs_n = 1'b0;
+        spi_cs_n = 1'b1;
         spi_clk = 1'b0;
         spi_mosi = 1'b0;
         spi_done = 1'b0;
@@ -188,7 +190,7 @@ module spi_controller #(
         end
         TRANSFER_HIGH: begin
           if (counter == 0) begin
-            if ((shift_reg << 1) != 0) begin
+            if (bitCounter > 1) begin
               nextState = TRANSFER_LOW;
             end else begin
               nextState     = FINISH;
