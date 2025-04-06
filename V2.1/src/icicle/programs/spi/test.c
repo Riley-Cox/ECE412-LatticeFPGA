@@ -77,8 +77,12 @@ void write_command(uint8_t cmd) {
     spi_send(cmd, 0);
 }
 
-void write_data(uint8_t data) {
-    spi_send(data, 1);
+void st7735_delay_ms(uint32_t ms) {
+    while (ms--) {
+        for (volatile uint32_t i = 0; i < 12000; i++) {
+            __asm__ volatile("nop");
+        }
+    }
 }
 
 void write_data_buffer(const uint8_t* data, uint16_t size) {
