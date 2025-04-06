@@ -94,11 +94,14 @@ module top;
 
     repeat (8) @(posedge spi_clk) begin
       mem_read(32'h00000008); // Read SPI_STATUS_ADDR
+        if (shift_cnt < 8) begin
         mosi = mosi | spi_mosi;
-        if (shift_cnt < 7)begin
+        if (mosi[7] !== 1)begin
         mosi = mosi << 1;
         shift_cnt++;
         end
+      end
+
     end
 
     
