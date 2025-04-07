@@ -1,0 +1,24 @@
+Meeting Notes 07APR2025
+
+Mohammad:
+  Finished SPI integration
+  Used a C program to test screen
+  Need to change color values to fix Endianness mismatch
+
+Xiang:
+  Not much work, been researching screen driver and how to continue work in phase 2 for SPI project
+  Next step is main.c for phase 1
+  
+Riley:
+  Finished SPI integration
+  Created alternate SPI implementation to include nextState, and went to 3 block FSM style RTL, cleaned up inferred latches
+  Will work on button/PWM/colorChange implementation
+  
+Nathan:
+  Had drill this weekend, not super productive
+  Will begin integration of user itnerface (buttons) for color change and brightness control. Will setup infrastructure with forward phases in mind (using fixed memory locations)
+
+HaoYang:
+  Focused on 3D model, will print a small version to test the clapse system this week. Full size model should be ready by Monday if small version test goes well. 
+
+Nathan met with Roy Wednesday: Needed to add in the start.o/start.s files, and may need to add a single-cycle startup reset to the system to ensure everything is initialized correctly because of how Radiant handles initial blocks. Nathan will work on these this week, then get with Rahul about the results. Also Rahul owes us hardware
