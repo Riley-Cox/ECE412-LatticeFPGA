@@ -1,8 +1,3 @@
-/**
- * Combined ST7735 Display Driver Test
- * Based on the files created by Xiang
- */
-
 #include <stdint.h>
 
 // === Hardware Interface (custom memory-mapped) ===
@@ -103,16 +98,35 @@ void set_addr_window(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1) {
 
     write_command(ST7735_RAMWR);
 }
-
+/**
 void fill_screen(uint16_t color) {
     set_addr_window(0, 0, ST7735_TFTWIDTH - 1, ST7735_TFTHEIGHT - 1);
     uint8_t hi = color >> 8;
     uint8_t lo = color & 0xFF;
     for (uint32_t i = 0; i < (ST7735_TFTWIDTH * ST7735_TFTHEIGHT); i++) {
-        write_data(hi);
+		write_data(hi);
         write_data(lo);
     }
 }
+**/
+
+void fill_screen(uint16_t color) {
+    set_addr_window(0, 0, ST7735_TFTWIDTH - 1, ST7735_TFTHEIGHT - 1);
+    
+    uint8_t hi = color >> 8;
+    uint8_t lo = color & 0xFF;
+
+    static uint8_t buffer[256];  // 
+    for (int i = 0; i < 256; i += 2) {
+        buffer[i] = hi;
+        buffer[i + 1] = lo;
+    }
+
+    for (uint32_t i = 0; i < (ST7735_TFTWIDTH * ST7735_TFTHEIGHT); i += 128) {
+        write_data_buffer(buffer, 256);  
+    }
+}
+
 
 void draw_pixel(uint16_t x, uint16_t y, uint16_t color) {
     if (x >= ST7735_TFTWIDTH || y >= ST7735_TFTHEIGHT) return;
@@ -130,22 +144,23 @@ void st7735_init(void) {
     st7735_delay_ms(500);
 
     write_command(ST7735_FRMCTR1);
-    write_data(0x01);
-    write_data(0x2C);
-    write_data(0x2D);
+	write_data(0x00);
+	write_data(0x06);
+	write_data(0x03);
+
 
     write_command(ST7735_FRMCTR2);
-    write_data(0x01);
-    write_data(0x2C);
-    write_data(0x2D);
+	write_data(0x00);
+	write_data(0x06);
+	write_data(0x03);
 
     write_command(ST7735_FRMCTR3);
-    write_data(0x01);
-    write_data(0x2C);
-    write_data(0x2D);
-    write_data(0x01);
-    write_data(0x2C);
-    write_data(0x2D);
+	write_data(0x00);
+	write_data(0x06);
+	write_data(0x03);	
+	write_data(0x00);
+	write_data(0x06);
+	write_data(0x03);
 
     write_command(ST7735_INVCTR);
     write_data(0x07);
