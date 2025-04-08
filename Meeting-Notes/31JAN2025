@@ -1,0 +1,55 @@
+Meeting Notes 31JAN2025
+
+Attendance:
+
+    Nathan
+
+    Riley
+
+    Haoyang
+
+    Xiang
+
+    Mohammad
+
+Discussion Points:
+
+    Roy expressed concern about a lack of clear prioritization — multiple tasks are ongoing without a defined main focus.
+
+    Another concern raised was the microcontroller comparison discussion happening without an implementation plan to support it.
+
+    Nathan clarified that the primary goal is the toolchain comparison.
+
+    Current plans include excessive validation steps that do not directly contribute to advancing project goals.
+
+    Rahul agreed with Roy, suggesting clearer priorities:
+
+        Get everything running on FPGA using Yosys first.
+
+        Then focus on comparing results with the Lattice toolchain.
+
+    Roy recommended starting with the Lattice toolchain due to its superior debug tool availability.
+
+    Nathan noted that Verilator is only used as a linter, but Roy pointed out this won’t be necessary when using the Lattice toolchain.
+
+    General agreement to start with what is known to work before expanding scope.
+    
+    Clarifications:
+
+    Rahul confirmed that no license is required for the UltraPlus tool.
+
+    Some RISC-V cores only support certain layouts for iCE40; ideally, a plug-and-play solution is preferred.
+
+    Roy mentioned that RISC-V is optional — open cores are a valid alternative if RISC-V compatibility is an issue.
+
+    SystemVerilog is broad, but the design subset is smaller and manageable.
+
+    Rahul is fine with SystemVerilog if it is PNR (Place-and-Route) friendly.
+
+To-Do:
+
+    Correct "PDS" — SystemVerilog should be written as one word.
+
+    Compare Upduino 2.1 vs. 3.0 to identify key differences.
+
+    Note that the ideal target cost for the final product is $60, assuming Lattice provides materials.

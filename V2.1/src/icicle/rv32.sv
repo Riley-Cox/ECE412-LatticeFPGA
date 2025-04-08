@@ -597,7 +597,7 @@ module rv32 #(
 
         /* data out (to timer) */
         .cycle_out(cycle_out)
-    );
+);
 
     rv32_writeback writeback (
         .clk(clk),

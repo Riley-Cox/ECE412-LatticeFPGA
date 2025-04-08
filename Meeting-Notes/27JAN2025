@@ -1,0 +1,20 @@
+
+Meeting Notes – 27JAN2025  
+
+Focus for the Week:  
+- Ensure steady progress continues as workload and pressure will increase in the coming weeks.  
+- Everyone should have their environment set up by now. If anyone needs help, contact Riley.  
+
+Technical Notes:  
+- Yosys recommends Verilator, but it will be used only as a linter, not for simulation.  
+- Still need to figure out how to generate a bitstream from Yosys.  
+
+Hardware Action Items:  
+- Start purchasing Upduino boards for those who need them.  
+- Main goal this week is to program the Upduino boards and verify they work with the toolchain.  
+- Riley will reach out to Nathan to arrange getting a board to another group member.  
+
+Status Updates:  
+- All members present confirmed their environments are set up and Yosys is installed.  
+- Need to contact Rahul this week for help setting up the Radiant toolchain.  
+- Xiang and Mohammad will meet soon to work on SPI implementation.  
