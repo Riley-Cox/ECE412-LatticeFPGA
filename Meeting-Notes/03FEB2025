@@ -1,0 +1,27 @@
+Meeting Notes – 03FEB2025  
+
+Updates:  
+- Provided an update on the differences between Upduino versions.  
+- Icicle core runs on Upduino 2.1, but SPI flash memory did not work.  
+  - Issue is persistent and causes the board to stay in reboot.  
+- Icicle does not support Wishbone, and IBEX does not work with Yosys.  
+- Next steps involve introducing parallel work:  
+  - Begin implementing the RISC-V core.  
+  - Start focusing on writing C code.  
+
+- A custom SPI driver will need to be written.  
+- Encountered issues with enums and typedefs in the open-source toolchain.  
+- Need to review one-hot vs regular multiplexer finite state machine design.  
+- Plan to write the SPI module first, then regroup for integration.  
+
+SystemVerilog Reminders:  
+- Stay close to Verilog where possible for compatibility.  
+- Use "logic" instead of "reg" in SystemVerilog.  
+- Avoid packing and unpacking data types, especially during synthesis.  
+
+Additional Notes:  
+- Still waiting on OpenCores account approval.  
+- OpenCores appears largely inactive; located some IP cores on GitHub as alternatives.  
+
+Action Items:  
+- Nathan and Riley need to meet and continue work on the RISC-V core.  

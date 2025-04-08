@@ -21,7 +21,14 @@ module top (
 
     /* UART */
     input uart_rx,
-    output logic uart_tx
+    output logic uart_tx,
+	
+	/* SPI Controller */
+	output logic spi_clk,
+	output logic spi_mosi,
+	output logic spi_cs_n,
+	output logic lcd_dc
+
 );
 `ifdef INTERNAL_OSC
     logic clk;
@@ -128,6 +135,13 @@ module top (
 
         /* UART */
         .uart_rx(uart_rx),
-        .uart_tx(uart_tx)
+        .uart_tx(uart_tx),
+		
+		/* SPI Controller */
+		.spi_clk(spi_clk),
+		.spi_mosi(spi_mosi),
+		.spi_cs_n(spi_cs_n),
+		.lcd_dc(lcd_dc)
+
     );
 endmodule

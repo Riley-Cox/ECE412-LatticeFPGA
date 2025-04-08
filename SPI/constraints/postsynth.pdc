@@ -1,0 +1,8 @@
+
+# following is to lock ports - but contraints tool should be checked
+ldc_set_location -site {27} [get_ports spi_mosi]
+ldc_set_location -site {26} [get_ports spi_clk]
+ldc_set_location -site {25} [get_ports spi_cs_n]
+ldc_set_location -site {23} [get_ports lcd_dc]
+#ldc_set_location -site {14} [get_ports test_out]
+ldc_set_port -iobuf {PULLMODE=NA} [get_ports clk]

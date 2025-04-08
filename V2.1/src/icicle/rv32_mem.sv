@@ -12,25 +12,19 @@ module rv32_mem (
     input clk,
     input reset,
 
+    // Formal/debug interface (unchanged)
 `ifdef RISCV_FORMAL
-    /* debug control in */
     input intr_in,
     input [4:0] rs1_in,
     input [4:0] rs2_in,
-
-    /* debug data in */
     input [31:0] next_pc_in,
     input [31:0] instr_in,
-
-    /* debug control out */
     output logic intr_out,
     output logic trap_out,
     output logic [4:0] rs1_out,
     output logic [4:0] rs2_out,
     output logic [3:0] read_mask_out,
     output logic [3:0] write_mask_out,
-
-    /* debug data out */
     output logic [31:0] pc_out,
     output logic [31:0] next_pc_out,
     output logic [31:0] instr_out,
@@ -41,12 +35,10 @@ module rv32_mem (
     output logic [31:0] write_value_out,
 `endif
 
-    /* control in (from hazard) */
     input stall_in,
     input flush_in,
     input writeback_flush_in,
 
-    /* control in */
     input branch_predicted_taken_in,
     input branch_misaligned_in,
     input valid_in,
@@ -67,10 +59,8 @@ module rv32_mem (
     input [4:0] rd_in,
     input rd_write_in,
 
-    /* control in (from data memory bus) */
     input data_fault_in,
 
-    /* data in */
     input [31:0] pc_in,
     input [31:0] result_in,
     input [31:0] rs1_value_in,
@@ -79,46 +69,35 @@ module rv32_mem (
     input [31:0] branch_pc_in,
     input [11:0] csr_in,
 
-    /* data in (from data memory bus) */
     input [31:0] data_read_value_in,
 
-    /* control out */
     output logic valid_out,
     output logic trap_unreg_out,
     output logic branch_mispredicted_out,
     output logic [4:0] rd_out,
     output logic rd_write_out,
 
-    /* control out (to data memory bus) */
     output logic data_read_out,
     output logic data_write_out,
     output logic [3:0] data_write_mask_out,
 
-    /* data out */
     output logic [31:0] rd_value_out,
     output logic [31:0] trap_pc_out,
     output logic [31:0] branch_pc_out,
 
-    /* data out (to data memory bus) */
     output logic [31:0] data_address_out,
     output logic [31:0] data_write_value_out,
 
-    /* data out (to timer) */
     output logic [63:0] cycle_out
 );
+
     logic branch_mispredicted;
     logic branch_taken;
 
-    /* branch unit */
     rv32_branch_unit branch_unit (
-        /* control in */
         .predicted_taken_in(branch_predicted_taken_in),
         .op_in(branch_op_in),
-
-        /* data in */
         .result_in(result_in),
-
-        /* control out */
         .taken_out(branch_taken),
         .mispredicted_out(branch_mispredicted)
     );
@@ -126,18 +105,15 @@ module rv32_mem (
     assign branch_pc_out = branch_pc_in;
     assign branch_mispredicted_out = branch_mispredicted && !flush_in;
 
-    /* memory access unit */
     logic mem_misaligned;
-
     logic [31:0] read_value;
     logic [3:0] read_mask;
 
+    assign data_address_out = {result_in[31:2], 2'b0};
     assign data_read_out = read_in && !mem_misaligned;
     assign data_write_out = write_in && !mem_misaligned;
-    assign data_address_out = {result_in[31:2], 2'b0};
 
     always_comb begin
-        /* alignment check */
         case (width_in)
             `RV32_MEM_WIDTH_WORD: mem_misaligned = result_in[1:0] != 0;
             `RV32_MEM_WIDTH_HALF: mem_misaligned = result_in[0] != 0;
@@ -145,7 +121,6 @@ module rv32_mem (
             default:              mem_misaligned = 1'bx;
         endcase
 
-        /* write port */
         if (write_in) begin
             case (width_in)
                 `RV32_MEM_WIDTH_WORD: begin
@@ -166,22 +141,17 @@ module rv32_mem (
                 end
                 `RV32_MEM_WIDTH_BYTE: begin
                     case (result_in[1:0])
-                        2'b00: begin
-                            data_write_value_out = {24'bx, rs2_value_in[7:0]};
-                            data_write_mask_out = 4'b0001;
-                        end
-                        2'b01: begin
-                            data_write_value_out = {16'bx, rs2_value_in[7:0], 8'bx};
-                            data_write_mask_out = 4'b0010;
-                        end
-                        2'b10: begin
-                            data_write_value_out = {8'bx, rs2_value_in[7:0], 16'bx};
-                            data_write_mask_out = 4'b0100;
-                        end
-                        2'b11: begin
-                            data_write_value_out = {rs2_value_in[7:0], 24'bx};
-                            data_write_mask_out = 4'b1000;
-                        end
+                        2'b00: data_write_value_out = {24'bx, rs2_value_in[7:0]};
+                        2'b01: data_write_value_out = {16'bx, rs2_value_in[7:0], 8'bx};
+                        2'b10: data_write_value_out = {8'bx, rs2_value_in[7:0], 16'bx};
+                        2'b11: data_write_value_out = {rs2_value_in[7:0], 24'bx};
+                    endcase
+
+                    case (result_in[1:0])
+                        2'b00: data_write_mask_out = 4'b0001;
+                        2'b01: data_write_mask_out = 4'b0010;
+                        2'b10: data_write_mask_out = 4'b0100;
+                        2'b11: data_write_mask_out = 4'b1000;
                     endcase
                 end
                 default: begin
@@ -194,7 +164,6 @@ module rv32_mem (
             data_write_mask_out = 4'b0;
         end
 
-        /* read port */
         if (read_in) begin
             case (width_in)
                 `RV32_MEM_WIDTH_WORD: begin
@@ -203,34 +172,24 @@ module rv32_mem (
                 end
                 `RV32_MEM_WIDTH_HALF: begin
                     case (result_in[1])
-                        1'b0: begin
-                            read_value = {{16{zero_extend_in ? 1'b0 : data_read_value_in[15]}}, data_read_value_in[15:0]};
-                            read_mask = 4'b0011;
-                        end
-                        1'b1: begin
-                            read_value = {{16{zero_extend_in ? 1'b0 : data_read_value_in[31]}}, data_read_value_in[31:16]};
-                            read_mask = 4'b1100;
-                        end
+                        1'b0: read_value = {{16{zero_extend_in ? 1'b0 : data_read_value_in[15]}}, data_read_value_in[15:0]};
+                        1'b1: read_value = {{16{zero_extend_in ? 1'b0 : data_read_value_in[31]}}, data_read_value_in[31:16]};
                     endcase
+                    read_mask = (result_in[1]) ? 4'b1100 : 4'b0011;
                 end
                 `RV32_MEM_WIDTH_BYTE: begin
                     case (result_in[1:0])
-                        2'b00: begin
-                            read_value = {{24{zero_extend_in ? 1'b0 : data_read_value_in[7]}},  data_read_value_in[7:0]};
-                            read_mask = 4'b0001;
-                        end
-                        2'b01: begin
-                            read_value = {{24{zero_extend_in ? 1'b0 : data_read_value_in[15]}}, data_read_value_in[15:8]};
-                            read_mask = 4'b0010;
-                        end
-                        2'b10: begin
-                            read_value = {{24{zero_extend_in ? 1'b0 : data_read_value_in[23]}}, data_read_value_in[23:16]};
-                            read_mask = 4'b0100;
-                        end
-                        2'b11: begin
-                            read_value = {{24{zero_extend_in ? 1'b0 : data_read_value_in[31]}}, data_read_value_in[31:24]};
-                            read_mask = 4'b1000;
-                        end
+                        2'b00: read_value = {{24{zero_extend_in ? 1'b0 : data_read_value_in[7]}}, data_read_value_in[7:0]};
+                        2'b01: read_value = {{24{zero_extend_in ? 1'b0 : data_read_value_in[15]}}, data_read_value_in[15:8]};
+                        2'b10: read_value = {{24{zero_extend_in ? 1'b0 : data_read_value_in[23]}}, data_read_value_in[23:16]};
+                        2'b11: read_value = {{24{zero_extend_in ? 1'b0 : data_read_value_in[31]}}, data_read_value_in[31:24]};
+                    endcase
+
+                    case (result_in[1:0])
+                        2'b00: read_mask = 4'b0001;
+                        2'b01: read_mask = 4'b0010;
+                        2'b10: read_mask = 4'b0100;
+                        2'b11: read_mask = 4'b1000;
                     endcase
                 end
                 default: begin
@@ -244,7 +203,6 @@ module rv32_mem (
         end
     end
 
-    /* traps */
     logic exception;
     logic [3:0] exception_cause;
     logic mem_exception;
@@ -286,7 +244,6 @@ module rv32_mem (
         end
     end
 
-    /* csr file */
     logic [31:0] csr_read_value;
     logic [63:0] cycle;
 
@@ -296,8 +253,6 @@ module rv32_mem (
         .stall_in(stall_in),
         .flush_in(flush_in),
         .writeback_flush_in(writeback_flush_in),
-
-        /* control in */
         .exception_in(exception),
         .exception_cause_in(exception_cause),
         .read_in(csr_read_in),
@@ -305,24 +260,14 @@ module rv32_mem (
         .write_op_in(csr_write_op_in),
         .src_in(csr_src_in),
         .mret_in(mret_in),
-
-        /* control in (from writeback) */
         .instr_retired_in(valid_out),
-
-        /* data in */
         .pc_in(pc_in),
         .rs1_value_in(rs1_value_in),
         .imm_value_in(imm_value_in),
         .csr_in(csr_in),
-
-        /* control out */
         .trap_out(trap_unreg_out),
-
-        /* data out */
         .read_value_out(csr_read_value),
         .trap_pc_out(trap_pc_out),
-
-        /* data out (to timer) */
         .cycle_out(cycle_out)
     );
 

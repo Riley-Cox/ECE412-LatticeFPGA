@@ -1,61 +1,43 @@
 `timescale 1ns/100ps
 
-`ifndef SB_GB_V
-`define SB_GB_V
-
-module SB_GB (
-  input  USER_SIGNAL_TO_GLOBAL_BUFFER,
-  output GLOBAL_BUFFER_OUTPUT
-);
-  // For simulation, simply pass the input to the output.
-  assign GLOBAL_BUFFER_OUTPUT = USER_SIGNAL_TO_GLOBAL_BUFFER;
-endmodule
-
-`endif
-
 module Top_module_spi (
-  //input  clk,       // External clock (e.g. 16 MHz)
-  input  reset_n,   // Active low reset
+  //input logic clk,       // External clock (e.g. 16 MHz)
+ // input clk_test ,
+ (* PULLUP *) input  reset_n,   // Active low reset
   // SPI and LCD interface outputs 
-  output spi_clk,
-  output spi_mosi,
-  output spi_cs_n,
-  output lcd_dc,
-  output test_out
+  output logic spi_clk,
+  output logic spi_mosi,
+  output logic spi_cs_n,
+  output logic lcd_dc,
+  output logic test_out
 );
 
-wire clk_buf;
+//(* keep = "true" *) wire clk_buf;
 wire clk;
 
-HSOSC
-#(
-.CLKHF_DIV ("0b11")
-// 0b00=48MHz(default), 0b01=24MHz, 0b10=12MHz, 0b11=6MHz
-) u_HSOSC (
-.CLKHFPU (1'b1), // I: power up, active high
-.CLKHFEN (1'b1), // I: output enable, active high
-.CLKHF (clk_buf) // O: high speed clock output
-);
 
-SB_GB clk_buf_inst (
-  .USER_SIGNAL_TO_GLOBAL_BUFFER(clk_buf),
-  .GLOBAL_BUFFER_OUTPUT(clk)
-);
+HSOSC #(.CLKHF_DIV ("0b10")) OSCInst0 (.CLKHFEN(1'b1), .CLKHFPU(1'b1), .CLKHF (clk));
 
 assign test_out = clk;
-//logic reset_n;
+
 /**
-initial begin
-  reset_n = 1'b0;  // assert reset
-  #500;            // hold reset for 100 time units
-  reset_n = 1'b1;  // deassert reset
+reg [2:0] reset_counter;
+reg reset_n;  // Initialize reset_n to 0
+
+always @(posedge clk) begin
+  if (reset_counter < 3'd5) begin
+    reset_counter <= reset_counter + 3'd1;
+    reset_n <= 1'b0;
+  end else begin
+	reset_counter <= reset_counter + 3'd1;
+    reset_n <= 1'b1;
+  end
 end
 **/
-
   // Internal control signals for the SPI controller
-   (* syn_preserve = "1" *) reg        spi_start_reg;
-   (* syn_preserve = "1" *) reg [7:0]  spi_data_in_reg;
-   (* syn_preserve = "1" *) reg        spi_dc_reg;
+   reg        spi_start_reg;
+  (* syn_preserve = "1" *) reg [7:0]  spi_data_in_reg;
+   reg        spi_dc_reg;
   wire       spi_busy;
   wire       spi_done;
 
@@ -111,8 +93,8 @@ end
           if (delay_counter < 16'd10) begin
             delay_counter <= delay_counter + 16'd1;
           end else begin
-            // Start Transaction 1: send 8'hA5 with dc = 1
-            spi_data_in_reg <= 8'hA5;
+            // Start Transaction 1: send 8'hE5 with dc = 1
+            spi_data_in_reg <= 8'hE5;
             spi_dc_reg      <= 1'b1;
             spi_start_reg   <= 1'b1;  // Assert start for one clock cycle
             state <= STATE_TRANS1;

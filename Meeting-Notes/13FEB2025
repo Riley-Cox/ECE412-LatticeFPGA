@@ -1,0 +1,44 @@
+
+
+Meeting Notes with Rahul – 12FEB2025
+ 
+- Updated Rahul on the documentation for WSL installation and the associated toolchain.  
+  - Noted that alternative Linux distributions can be explored if needed.  
+
+SOC Block Diagram: 
+- Current version is acceptable due to detailed Icicle Core information.  
+- Agreed to reorder the diagram to resemble a more traditional SoC layout.  
+  - Detailed CPU internals are not necessary.  
+  - Diagram should include GPIO pinouts.  
+  - UART functionality should be clearly indicated.  
+- Observed that the bus appears to be general-purpose, capable of transferring data between components.  
+  - Understanding the bus operation is critical for progressing with SPI development.  
+
+LCD:
+- Current LCD screens are out of stock. Concern raised about additional complexity if switching to another model.  
+- Rahul suggested:  
+  - If switching screens, purchase 5–10 units of the new model.  
+  - Research 1.44” and 2.0” screens, create a comparison table versus the current screen, and check for common drivers.  
+
+Project Status:
+- RISC-V implementation completed.  
+- Toolchain installed and documented.  
+- Preliminary SPI controller designed (pending simulation, testing, and implementation).  
+- UART functionality confirmed.  
+
+Action Items for Mohammad: 
+- Run SPI simulation on Questasim using the Radiant toolchain.  
+- Watch the Lattice Semiconductor three-part video series on the Radiant software tool flow (available on YouTube).  
+
+  
+AI:
+  - After completing SPI, explore integrating AI.  
+  - One potential path: Port Tinyvision.ai’s SenseAI implementation to the current toolchain and board.  
+
+To-Do:  
+- Continue SPI simulation and testing.  
+- Refactor SoC block diagram: remove CPU detail, add GPIO, indicate UART, ensure clear bus function.  
+- Research 1.44” and 2.0” LCDs:  
+  - Create comparison table.  
+  - Determine driver compatibility.  
+- Prepare for potential AI integration following Initial Phase completion (Planned for end of march).  
