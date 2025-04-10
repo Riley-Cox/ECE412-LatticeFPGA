@@ -24,4 +24,9 @@ void st7735_fill_screen(uint16_t color);
 // Draw a single pixel
 void st7735_draw_pixel(uint16_t x, uint16_t y, uint16_t color);
 
+// Text and graphics functions
+void st7735_fill_rect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
+void st7735_draw_char(int16_t x, int16_t y, unsigned char c, uint16_t textColor, uint16_t bgColor, uint8_t size);
+void st7735_draw_text(int16_t x, int16_t y, const char *text, uint16_t textColor, uint16_t bgColor, uint8_t size);
+
 #endif // ST7735_H
