@@ -35,9 +35,13 @@
 #define ST7735_NORON     0x13
 #define ST7735_DISPON    0x29
 
+#define ST7735_BLACK     0x0000
+#define ST7735_BLUE      0x001F
 #define ST7735_RED       0xF800
 #define ST7735_GREEN     0x07E0
-#define ST7735_BLUE      0x001F
+#define ST7735_CYAN      0x07FF
+#define ST7735_MAGENTA   0xF81F
+#define ST7735_YELLOW    0xFFE0
 #define ST7735_WHITE     0xFFFF
 /**
  * Standard 5x7 font for ASCII characters
