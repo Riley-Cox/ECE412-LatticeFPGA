@@ -11,7 +11,7 @@ endmodule
 
 module colorChange (input bit clock, reset, input logic change, output logic [15:0] color);
 
-	logic [16][15:0] colorArray;
+	logic [15:0] colorArray [15:0];
 	logic [3:0] index;
 	assign colorArray [0] = 16'hF800;
 	assign colorArray [1] = 16'h07E0;

@@ -1,6 +1,6 @@
 `include "defines.sv"
-//`include "icicle.sv"
-//`include "pll.sv"
+`include "icicle.sv"
+`include "pll.sv"
 `include "sync.sv"
 
 module top (
@@ -16,14 +16,23 @@ module top (
 	output logic spi_clk,
 	output logic spi_mosi,
 	output logic spi_cs_n,
-	output logic lcd_dc
+	output logic lcd_dc,
+
+    /* Button */
+    input brightPush,
+    input colorPush,
+    output logic screenPower,
 
 );
-
+`ifdef INTERNAL_OSC
     logic clk;
 
-    HSOSC #(.CLKHF_DIV ("0b01")) inthosc (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(clk));
-
+    SB_HFOSC inthosc (
+	.CLKHFPU(1'b1),
+	.CLKHFEN(1'b1),
+	.CLKHF(clk)
+    );
+`endif
 
     logic pll_clk;
     logic pll_locked_async;
@@ -80,7 +89,11 @@ module top (
 		.spi_clk(spi_clk),
 		.spi_mosi(spi_mosi),
 		.spi_cs_n(spi_cs_n),
-		.lcd_dc(lcd_dc)
+		.lcd_dc(lcd_dc),
+	/* Button */
+	.brightPush(brightPush),
+	.colorPush(colorPush),
+	.screenPower(screenPower)
 
     );
 endmodule

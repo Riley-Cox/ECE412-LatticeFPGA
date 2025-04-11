@@ -5,6 +5,7 @@
 `include "timer.sv"
 `include "uart.sv"
 `include "spi.sv"
+`include "../../../peripherals/button.sv"
 
 `ifdef ECP5
 `define RAM_SIZE 8192
@@ -43,7 +44,11 @@ module icicle (
     output logic spi_clk,
     output logic spi_mosi,
     output logic spi_cs_n,
-    output logic lcd_dc
+    output logic lcd_dc,
+
+    output logic screenPower,
+    input brightPush,
+    input colorPush
 );
     logic [31:0] instr_address;
     logic instr_read;
@@ -68,6 +73,11 @@ module icicle (
     logic [31:0] mem_write_value;
     logic mem_ready;
     logic mem_fault;
+
+    logic bright;
+    logic color;
+    logic [15:0] colorOut,
+
 
     assign mem_read_value = ram_read_value | leds_read_value | uart_read_value | timer_read_value | flash_read_value | spi_read_value;
     assign mem_ready = ram_ready | leds_ready | uart_ready | timer_ready | flash_ready | spi_ready | mem_fault;
@@ -254,6 +264,30 @@ module icicle (
         .spi_mosi(spi_mosi),
         .spi_cs_n(spi_cs_n),
         .lcd_dc(lcd_dc)
+    );
+    
+    button pwmButton(
+	.press(brightPush),
+	.action(bright)
+    );
+
+    button colorButton(
+	.press(colorPush), 
+	.action(color)
+    );
+
+    colorChange screenColor(
+	.clock(clk),
+	.reset(reset),
+	.change(colorPush),
+	.color(colorOut)
+    );
+
+    brightness screenBright(
+	.clock(clk),
+	.reset(reset),
+	.change(brightPush),
+	.screenPower(screenPower)
     );
 
 endmodule
