@@ -1,0 +1,22 @@
+Meeting notes April 11 2025
+
+Mohammad:
+  Made unified C program with test to ensure that we don't need <stdint.h> library
+  
+Riley:
+  Worked on button integration
+  PWM is done, needs tested
+  Color button needs memory connections to write to the location SPI is reading from
+Nathan:
+  Same as Riley
+  Met with Rahul to grab hardware in Tigard
+  
+Xiang:
+  Edited C code to ensure <stdint.h> is not necessary
+  Added C code for sending text to display on screen
+    3 new functions; draw character(), draw text(), fill rectangle()
+Haoyang:
+  Printed prototype 3d enclosure
+  More work on 3D model
+
+overall lacking week, waiting on Nathan to finish button stuff. 
