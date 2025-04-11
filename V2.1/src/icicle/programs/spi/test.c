@@ -267,7 +267,7 @@ void st7735_fill_rect(unsigned short x, unsigned short y, unsigned short w, unsi
     
     // Set the address window for the rectangle
     // Has -1 because coordinates start from 0
-    st7735_set_addr_window(x, y, x + w - 1, y + h - 1);
+    set_addr_window(x, y, x + w - 1, y + h - 1);
     
     // Calculate total number of pixels
     unsigned int total_pixels = (unsigned int)w * (unsigned int)h;
@@ -278,8 +278,8 @@ void st7735_fill_rect(unsigned short x, unsigned short y, unsigned short w, unsi
     
     // Fill the rectangle with the color
     for (unsigned int i = 0; i < total_pixels; i++) {
-        st7735_write_data(hi);  // High byte
-        st7735_write_data(lo);  // Low byte
+        write_data(hi);  // High byte
+        write_data(lo);  // Low byte
     }
 }
 
@@ -318,7 +318,7 @@ void st7735_draw_char(unsigned short x, unsigned short y, unsigned char c,
             if (line & 0x01) {
                 if (size == 1) {
                     // Single pixel - direct draw
-                    st7735_draw_pixel(x + i, y + j, textColor);
+                    draw_pixel(x + i, y + j, textColor);
                 } else {
                     // Scaled pixel - draw as rectangle
                     st7735_fill_rect(x + i * size, y + j * size, size, size, textColor);
@@ -326,7 +326,7 @@ void st7735_draw_char(unsigned short x, unsigned short y, unsigned char c,
             } else if (bgColor != textColor) {
                 // Draw background if colors are different
                 if (size == 1) {
-                    st7735_draw_pixel(x + i, y + j, bgColor);
+                    draw_pixel(x + i, y + j, bgColor);
                 } else {
                     st7735_fill_rect(x + i * size, y + j * size, size, size, bgColor);
                 }
@@ -338,7 +338,7 @@ void st7735_draw_char(unsigned short x, unsigned short y, unsigned char c,
 //Draw text string
 
 void st7735_draw_text(unsigned short x, unsigned short y, const char *text,
-                     unsigned short textColor, uint16_t bgColor, uint8_t size) {
+                     unsigned short textColor, unsigned short bgColor, unsigned char size) {
     unsigned short cursor_x = x;
     unsigned short cursor_y = y;
     unsigned char char_width = FONT_WIDTH * size;
