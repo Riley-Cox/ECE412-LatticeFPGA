@@ -270,16 +270,19 @@ void st7735_fill_rect(unsigned short x, unsigned short y, unsigned short w, unsi
     set_addr_window(x, y, x + w - 1, y + h - 1);
     
     // Calculate total number of pixels
-    unsigned int total_pixels = (unsigned int)w * (unsigned int)h;
+    //unsigned int total_pixels = (unsigned int)w * (unsigned int)h;
     
     // Extract high and low bytes from the color
     unsigned char hi = color >> 8;
     unsigned char lo = color & 0xFF;
     
     // Fill the rectangle with the color
-    for (unsigned int i = 0; i < total_pixels; i++) {
-        write_data(hi);  // High byte
-        write_data(lo);  // Low byte
+    for (unsigned char i = 0; i < y; i++) {
+	    for (unsigned char j = 0; j < x; j++)
+		    {
+      			write_data(hi);  // High byte
+       			write_data(lo);  // Low byte
+		    }
     }
 }
 
@@ -525,8 +528,6 @@ int main(void) {
         
         // Test wrapping (long text that will automatically wrap)
         st7735_draw_text(5, 145, "YOU SHOULD SEE THIS TEXT WRAP AROUND TO THE NEXT LINE", ST7735_MAGENTA, ST7735_BLACK, 1);
-                        ST7735_MAGENTA, ST7735_BLACK, 1);
-
     while (1);  // Idle loop
 
     return 0;
