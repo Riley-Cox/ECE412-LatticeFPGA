@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-
+`include "../../V2.1/src/icicle/spi.sv"
 module top;
 
   logic clk;
@@ -36,7 +36,11 @@ module top;
     .spi_clk(spi_clk),
     .spi_mosi(spi_mosi),
     .spi_cs_n(spi_cs_n),
-    .lcd_dc(lcd_dc)
+    .lcd_dc(lcd_dc),
+    .color_start(color_start),
+    .color_hold(color_hold),
+    .color_again(color_again),
+    .change(change)
   );
 
   

@@ -17,10 +17,13 @@ module top (
 	output logic spi_mosi,
 	output logic spi_cs_n,
 	output logic lcd_dc,
+	output logic color_start,
+	output logic color_hold,
+	output logic color_again,
 
     /* Button */
     input brightPush,
-    input colorPush,
+(*PULLDOWN*)    input colorPush,
     output logic screenPower,
 
 );
@@ -90,6 +93,9 @@ module top (
 		.spi_mosi(spi_mosi),
 		.spi_cs_n(spi_cs_n),
 		.lcd_dc(lcd_dc),
+		.color_start(color_start),
+		.color_hold(color_hold),
+		.color_again(color_again),
 	/* Button */
 	.brightPush(brightPush),
 	.colorPush(colorPush),
