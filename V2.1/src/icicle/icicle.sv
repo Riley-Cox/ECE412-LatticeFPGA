@@ -75,7 +75,6 @@ module icicle (
 
     logic bright;
     logic color;
-    logic [15:0] colorOut,
 
 
     assign mem_read_value = ram_read_value | leds_read_value | uart_read_value | timer_read_value | flash_read_value | spi_read_value;

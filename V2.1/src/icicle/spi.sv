@@ -6,7 +6,7 @@ module spi_controller #(
 )(
   input  logic         clk,
   input  logic         reset_n,
-  input logic change;
+  input logic change,
 
   // Memory bus interface
   input  logic [31:0]  address_in,
@@ -128,6 +128,27 @@ module spi_controller #(
     end
   end
 
+  always_ff @(posedge clk or negedge reset_n) begin
+	if (!reset_n) begin
+		color_hold = '0;
+		color_again = '0;
+	end
+	else if(state == IDLE) begin
+		color_hold <= color_start;
+		color_again <= color_again;
+	end
+	else if(state == FINISH) begin
+		color_hold <= '0;
+		color_again <= color_hold;
+	end
+	else begin
+		color_hold <= color_hold;
+		color_again <= color_again;
+	end
+  end	
+
+		
+
   //Control logic
   always_comb begin
     unique case (state)
@@ -138,13 +159,6 @@ module spi_controller #(
           spi_done = 1'b0;
           spi_clk = 1'b0;
           spi_mosi = '0;
-	  color again = color_again;
-	  if (color_start) begin
-		  color_hold = '1;
-	  end
-	  else begin
-		  color_hold = color_hold;
-	  end
         end        
         else if(!spi_done_ack) begin
           spi_done = 1'b0;
@@ -152,8 +166,6 @@ module spi_controller #(
           spi_mosi = '0;
           spi_cs_n = 1'b1;
           spi_busy = 1'b0;
-	  color_hold = color_hold;
-	  color_again = color_again;
         end
         else begin
           spi_done = 1'b0;
@@ -161,8 +173,6 @@ module spi_controller #(
           spi_mosi = '0;
           spi_busy = 1'b1;
           spi_cs_n = 1'b1;
-	  color_hold = color_hold;
-	  color_again = color_again;
         end
       end
       TRANSFER_LOW: begin
@@ -171,8 +181,6 @@ module spi_controller #(
         spi_done = 1'b0;
         spi_busy = 1'b1;
         spi_cs_n = 1'b0;
-	color_hold = color_hold;
-        color_again = color_again;
       end
       TRANSFER_HIGH: begin
         spi_clk = 1'b1;
@@ -180,8 +188,6 @@ module spi_controller #(
         spi_busy = 1'b1;
         spi_cs_n = 1'b0;
         spi_mosi = shift_reg[7];
-	color_hold = color_hold;
-	color_again = color_again;
       end
       FINISH: begin
           spi_cs_n = 1'b1;
@@ -189,17 +195,6 @@ module spi_controller #(
           spi_busy = 1'b0;
           spi_done = 1'b1;
           spi_mosi = 1'b0;
-	  if (color_hold) begin
-		  color_hold = '0;
-		  color_again = '1;
-	  end
-	  else if (color_again) begin
-		  color_again = '0;
-	  end
-	  else begin
-	  	color_hold = color_hold;
-	  	color_again = color_again;
-  	  end
       end
       default: begin
         spi_cs_n = 1'b1;
@@ -207,8 +202,6 @@ module spi_controller #(
         spi_mosi = 1'b0;
         spi_done = 1'b0;
         spi_busy = 1'b1;
-	color_hold = color_hold;
-      	color_again = color_again;
       end
     endcase
   end
