@@ -9,7 +9,7 @@ end
 
 endmodule
 
-module colorChange (input bit clock, reset_n, input logic change, output logic [15:0] color, output logic ready);
+module colorChange (input bit clock, reset, input logic change, output logic [15:0] color);
 
 	logic [15:0] colorArray [15:0];
 	logic [3:0] index;
@@ -32,15 +32,13 @@ module colorChange (input bit clock, reset_n, input logic change, output logic [
 
 	
 	always_ff @(posedge clock) begin
-		if (!reset_n) begin
+		if (reset) begin
 			index <= '0;
 			color <= colorArray[0];
-			ready <= '1
 			end
 		else if (change) begin
 			color <= colorArray[index+1];
 			index <= index+1;
-			ready <= '1
 			end
 		else begin
 			color <= colorArray[index];

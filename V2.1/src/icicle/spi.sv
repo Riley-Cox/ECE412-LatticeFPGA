@@ -1,9 +1,12 @@
+`include "button.sv"
+
 module spi_controller #(
   parameter logic [5:0] SPI_DIV = 4,
   parameter integer DIV_WIDTH = 6
 )(
   input  logic         clk,
   input  logic         reset_n,
+  input logic change;
 
   // Memory bus interface
   input  logic [31:0]  address_in,
@@ -47,6 +50,16 @@ module spi_controller #(
 
   assign lcd_dc = lcd_dc_reg;
 
+  //Change color module and logic
+  
+  logic [15:0] color;
+  logic color_start;
+  logic color_hold;
+  logic color_again; 
+
+  colorChange colorChange (clk, reset_n, change, color, color_start);
+
+
   // Write detection logic
   logic write_sel;
   logic last_write_sel;
@@ -61,11 +74,12 @@ module spi_controller #(
       last_write_sel <= write_sel;
        if (state != IDLE)
         start_latched <= 1'b0;
-      else if (write_sel && !last_write_sel && !spi_busy && !spi_done)
+      else if ((write_sel && !last_write_sel && !spi_busy && !spi_done) || color_start || color_again)
         start_latched <= 1'b1;
     end
   end
 
+  //Next State logic
   always_ff @(posedge clk or negedge reset_n) begin
     if (!reset_n) begin
       state <= IDLE;
@@ -75,6 +89,7 @@ module spi_controller #(
     end
   end
 
+  //Transaction length counter
   always_ff @(posedge clk or negedge reset_n) begin
     if (!reset_n) begin
       counter <= SPI_DIV - 1;
@@ -88,7 +103,7 @@ module spi_controller #(
     end
   end
 
-
+  //SPI output register logic
   always_ff @(posedge clk or negedge reset_n) begin
     if (!reset_n)begin
       shift_reg <= '0;
@@ -113,7 +128,7 @@ module spi_controller #(
     end
   end
 
-
+  //Control logic
   always_comb begin
     unique case (state)
       IDLE: begin
@@ -123,6 +138,13 @@ module spi_controller #(
           spi_done = 1'b0;
           spi_clk = 1'b0;
           spi_mosi = '0;
+	  color again = color_again;
+	  if (color_start) begin
+		  color_hold = '1;
+	  end
+	  else begin
+		  color_hold = color_hold;
+	  end
         end        
         else if(!spi_done_ack) begin
           spi_done = 1'b0;
@@ -130,6 +152,8 @@ module spi_controller #(
           spi_mosi = '0;
           spi_cs_n = 1'b1;
           spi_busy = 1'b0;
+	  color_hold = color_hold;
+	  color_again = color_again;
         end
         else begin
           spi_done = 1'b0;
@@ -137,6 +161,8 @@ module spi_controller #(
           spi_mosi = '0;
           spi_busy = 1'b1;
           spi_cs_n = 1'b1;
+	  color_hold = color_hold;
+	  color_again = color_again;
         end
       end
       TRANSFER_LOW: begin
@@ -145,6 +171,8 @@ module spi_controller #(
         spi_done = 1'b0;
         spi_busy = 1'b1;
         spi_cs_n = 1'b0;
+	color_hold = color_hold;
+        color_again = color_again;
       end
       TRANSFER_HIGH: begin
         spi_clk = 1'b1;
@@ -152,6 +180,8 @@ module spi_controller #(
         spi_busy = 1'b1;
         spi_cs_n = 1'b0;
         spi_mosi = shift_reg[7];
+	color_hold = color_hold;
+	color_again = color_again;
       end
       FINISH: begin
           spi_cs_n = 1'b1;
@@ -159,6 +189,17 @@ module spi_controller #(
           spi_busy = 1'b0;
           spi_done = 1'b1;
           spi_mosi = 1'b0;
+	  if (color_hold) begin
+		  color_hold = '0;
+		  color_again = '1;
+	  end
+	  else if (color_again) begin
+		  color_again = '0;
+	  end
+	  else begin
+	  	color_hold = color_hold;
+	  	color_again = color_again;
+  	  end
       end
       default: begin
         spi_cs_n = 1'b1;
@@ -166,6 +207,8 @@ module spi_controller #(
         spi_mosi = 1'b0;
         spi_done = 1'b0;
         spi_busy = 1'b1;
+	color_hold = color_hold;
+      	color_again = color_again;
       end
     endcase
   end
@@ -212,7 +255,14 @@ module spi_controller #(
     if (!reset_n) begin
       data_reg <= 8'h00;
       lcd_dc_reg <= 1'b0;
-    end else if (sel_in && |write_mask_in) begin
+    end 
+    else if (color_start) begin
+	    data_reg <= color[7:0];
+    end
+    else if (color_again) begin
+	    data_reg <= color[15:8];
+    end
+    else if (sel_in && |write_mask_in) begin
       case (offset)
         SPI_DATA_ADDR:   data_reg <= write_value_in[7:0];
         SPI_DC_ADDR:     lcd_dc_reg <= write_value_in[0];
