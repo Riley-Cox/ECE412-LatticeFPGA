@@ -9,9 +9,9 @@ end
 
 endmodule
 
-module colorChange (input bit clock, reset, input logic change, output logic [15:0] color);
+module colorChange (input bit clock, reset_n, input logic change, output logic [15:0] color, output logic ready);
 
-	logic [16][15:0] colorArray;
+	logic [15:0] colorArray [15:0];
 	logic [3:0] index;
 	assign colorArray [0] = 16'hF800;
 	assign colorArray [1] = 16'h07E0;
@@ -29,19 +29,39 @@ module colorChange (input bit clock, reset, input logic change, output logic [15
 	assign colorArray [13] = 16'hFC03;
 	assign colorArray [14] = 16'hFE01;
 	assign colorArray [15] = 16'hA5A5;
+	logic changed;
 
 	
-	always_ff @(posedge clock) begin
-		if (reset) begin
+	always_ff @(posedge change or negedge change or negedge reset_n or posedge clock) begin
+		if (!reset_n) begin
 			index <= '0;
-			color <= colorArray[0];
+			color <= colorArray[15];
+			ready <= '0;
+			changed <= '0;
 			end
-		else if (change) begin
-			color <= colorArray[index+1];
+		else if (changed && change) begin
+			color <= color;
+			ready <= '0;
+			changed <= changed;
+			index <= index;
+			end
+		else if (change && !changed) begin
+			color <= colorArray[index];
 			index <= index+1;
+			changed <= '1;
+			ready <= '1;
+			end
+		else if (changed && !change) begin
+			ready <= '0;
+			changed <= '0;
+			color <= color;
+			index <= index;
 			end
 		else begin
-			color <= colorArray[index];
+			ready <= '0;
+			index <= index;
+			changed <= changed;
+			color <= color;
 			end
 		end
 			

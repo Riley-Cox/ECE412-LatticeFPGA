@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-`include "../../V2.1/src/icicle/spi.sv"
+//`include "../../V2.1/src/icicle/spi.sv"
 module top;
 
   logic clk;
@@ -13,6 +13,7 @@ module top;
   logic [31:0] write_value_in;
   logic [31:0] read_value_out;
   logic ready_out;
+  logic change;
 
   int clk_cnt, shift_cnt;
   
@@ -86,6 +87,7 @@ module top;
     read_in = 0;
     write_mask_in = 0;
     write_value_in = 0;
+	change = 0;
 
     
     #20;
@@ -103,15 +105,40 @@ module top;
         mosi = mosi << 1;
         shift_cnt++;
         end
+		else mosi = '0;
     end
+	
+
 
     
     mem_write(32'h0000000C, 32'h00000001); // Set lcd_dc
+	
+	
+	#50 change = '1;
+	//#150 change = '0;
+	
+    repeat (8) @(posedge spi_clk) begin
+        mosi = mosi | spi_mosi;
+        if (shift_cnt < 15)begin
+        mosi = mosi << 1;
+        shift_cnt++;
+        end
+		else mosi = '0;
+    end
 
+	    repeat (8) @(posedge spi_clk) begin
+        mosi = mosi | spi_mosi;
+        if (shift_cnt < 23)begin
+        mosi = mosi << 1;
+        shift_cnt++;
+        end
+		else mosi = '0;
+    end
     #100;
     $display("Test complete");
     $display("MOSI: %h", mosi);
-    $finish;
+    //$finish;
+	$stop;
   end
 
 endmodule

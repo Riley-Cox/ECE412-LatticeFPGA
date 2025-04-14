@@ -1,4 +1,4 @@
-`include "button.sv"
+//`include "button.sv"
 
 module spi_controller #(
   parameter logic [5:0] SPI_DIV = 4,
@@ -136,13 +136,13 @@ module spi_controller #(
 		color_hold <= '0;
 		color_again <= '0;
 	end
-	else if(state == IDLE) begin
-		color_hold <= color_start;
+	else if(state == IDLE && color_start) begin
+		color_hold <= '1;;
 		color_again <= color_again;
 	end
 	else if(state == FINISH) begin
-		color_hold <= '0;
 		color_again <= color_hold;
+		color_hold <= '0;
 	end
 	else begin
 		color_hold <= color_hold;
