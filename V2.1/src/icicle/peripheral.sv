@@ -1,10 +1,13 @@
-module button (input logic press, output logic action);
+module button (input logic press,input bit clk, reset, output logic action);
 
-always_comb begin
-	if (press)
-		action = '1;
+always_ff @(posedge clk or negedge reset) begin
+	if (!reset)
+		action <= '0;
+	else if (press)
+
+		action <= '1;
 	else
-		action = '0;
+		action <= '0;
 end
 
 endmodule
@@ -13,7 +16,7 @@ module colorChange (input bit clock, reset_n, input logic change, output logic [
 
 	logic [15:0] colorArray [15:0];
 	logic [3:0] index;
-	assign colorArray [0] = 16'hF800;
+	assign colorArray [0] = 16'hF801;
 	assign colorArray [1] = 16'h07E0;
 	assign colorArray [2] = 16'h001F;
 	assign colorArray [3] = 16'hFFFF;

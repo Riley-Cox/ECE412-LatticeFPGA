@@ -58,7 +58,7 @@ module spi_controller #(
   logic color_again; 
 
   colorChange colorChange (clk, reset_n, change, color, color_start);
-
+// assign color_start = '0;
 
   // Write detection logic
   logic write_sel;
@@ -74,7 +74,7 @@ module spi_controller #(
       last_write_sel <= write_sel | color_start | color_again;
        if (state != IDLE)
         start_latched <= 1'b0;
-      else if (write_sel || color_start || color_again && (!last_write_sel && !spi_busy && !spi_done))
+      else if ((write_sel || color_start || color_again) && !last_write_sel && !spi_busy && !spi_done)
         start_latched <= 1'b1;
     end
   end
