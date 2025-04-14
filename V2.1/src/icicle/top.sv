@@ -90,9 +90,6 @@ module top (
 		.spi_mosi(spi_mosi),
 		.spi_cs_n(spi_cs_n),
 		.lcd_dc(lcd_dc),
-		.color_start(color_start),
-		.color_hold(color_hold),
-		.color_again(color_again),
 	/* Button */
 	.brightPush(brightPush),
 	.colorPush(colorPush),
