@@ -17,9 +17,6 @@ module top (
 	output logic spi_mosi,
 	output logic spi_cs_n,
 	output logic lcd_dc,
-	output logic color_start,
-	output logic color_hold,
-	output logic color_again,
 
     /* Button */
     input brightPush,

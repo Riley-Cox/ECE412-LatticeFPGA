@@ -32,7 +32,7 @@ module colorChange (input bit clock, reset_n, input logic change, output logic [
 	logic changed;
 
 	
-	always_ff @(posedge change or negedge change or negedge reset_n or posedge clock) begin
+	always_ff @(negedge reset_n or posedge clock) begin
 		if (!reset_n) begin
 			index <= '0;
 			color <= colorArray[15];

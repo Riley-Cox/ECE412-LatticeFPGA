@@ -1,4 +1,4 @@
-//`include "button.sv"
+`include "peripheral.sv"
 
 module spi_controller #(
   parameter logic [5:0] SPI_DIV = 4,
@@ -22,9 +22,6 @@ module spi_controller #(
   output logic         spi_mosi,
   output logic         spi_cs_n,
   output logic         lcd_dc,
-  output logic color_start,
-  output logic color_hold,
-  output logic color_again 
 );
 
   localparam SPI_DATA_ADDR   = 32'h00000000;
@@ -56,9 +53,9 @@ module spi_controller #(
   //Change color module and logic
   
   logic [15:0] color;
-  //logic color_start;
-  //logic color_hold;
-  //logic color_again; 
+  logic color_start;
+  logic color_hold;
+  logic color_again; 
 
   colorChange colorChange (clk, reset_n, change, color, color_start);
 
