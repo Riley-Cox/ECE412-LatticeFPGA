@@ -1,0 +1,23 @@
+Meeting notes for 14APR2025
+
+Riley:
+  Same as Nathan
+
+Nathan:
+  Changing colors with button works in simulation of isolated module. Further troubleshooting needed; screen has non-deterministic startup with button implemented. 
+
+Mohammad:
+  Going to get started on testing text display more thoroughly; sizes, locations, animations, help with button integration as needed.
+  Moving over to Radiant troubleshooting instead, until Nathan and Riley done with spi button. 
+
+Xiang:
+  Unsure what to do; work on getting portable power delivery system. Work with Haoyang with on PCB when he gets the enclosure done
+
+Haoyang:
+  Needs to design PCB to keep everything neat inside enclosure. Need to do at least one more test print for the enclosure but pretty sure it's ready to go. 
+
+
+Radiant troubleshooting:
+  PLL needs translated
+  are we putting the program on the board?
+  Do we need to add in a single-cycle reset so we know everything is at a known initial state (difference in Yosys v. Radiant initial block protocol)
