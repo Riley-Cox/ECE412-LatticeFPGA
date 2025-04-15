@@ -21,3 +21,5 @@ set_io lcd_dc    23
 set_io brightPush 13
 set_io colorPush 21
 set_io screenPower 25
+set_io color_start 19
+set_io changeOut 18

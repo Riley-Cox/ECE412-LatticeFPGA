@@ -17,13 +17,21 @@ module top (
 	output logic spi_mosi,
 	output logic spi_cs_n,
 	output logic lcd_dc,
+	output logic color_start,
+	output logic changeOut,
 
     /* Button */
     input brightPush,
-(*PULLDOWN*)    input colorPush,
-    output logic screenPower,
+    input colorPush,
+    output logic screenPower
 
 );
+
+//	logic colorPush;
+//	assign colorPush = '0;
+//	logic brightPush;
+//	assign brightPush ='0;
+	
 `ifdef INTERNAL_OSC
     logic clk;
 
@@ -90,6 +98,8 @@ module top (
 		.spi_mosi(spi_mosi),
 		.spi_cs_n(spi_cs_n),
 		.lcd_dc(lcd_dc),
+		.color_start(color_start),
+		.changeOut(changeOut),
 	/* Button */
 	.brightPush(brightPush),
 	.colorPush(colorPush),

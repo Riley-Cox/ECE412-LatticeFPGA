@@ -22,6 +22,8 @@ module spi_controller #(
   output logic         spi_mosi,
   output logic         spi_cs_n,
   output logic         lcd_dc,
+  output logic 		color_start,
+  output logic 		changeOut
 );
 
   localparam SPI_DATA_ADDR   = 32'h00000000;
@@ -53,12 +55,12 @@ module spi_controller #(
   //Change color module and logic
   
   logic [15:0] color;
-  logic color_start;
+//  logic color_start;
   logic color_hold;
   logic color_again; 
 
-  colorChange colorChange (clk, reset_n, change, color, color_start);
-// assign color_start = '0;
+  colorChange colorChange (clk, reset_n, 1'b0,changeOut, color, color_start);
+  //assign color_start = '0;
 
   // Write detection logic
   logic write_sel;
@@ -134,7 +136,7 @@ module spi_controller #(
 		color_again <= '0;
 	end
 	else if(state == IDLE && color_start) begin
-		color_hold <= '1;;
+		color_hold <= '1;
 		color_again <= color_again;
 	end
 	else if(state == FINISH) begin
