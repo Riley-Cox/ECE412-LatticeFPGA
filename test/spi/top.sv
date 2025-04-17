@@ -14,6 +14,7 @@ module top;
   logic [31:0] read_value_out;
   logic ready_out;
   logic change;
+  logic pressed;
   logic color_start;
 
   int clk_cnt, shift_cnt;
@@ -42,10 +43,10 @@ module top;
     //.color_start(color_start),
     //.color_hold(color_hold),
     //.color_again(color_again),
-    .change(change)
+    .change(pressed)
   );
 
-  
+  button buttonTest(change, clk, reset_n, pressed);
   always #5 clk = ~clk; // 100 MHz clock
   
 
