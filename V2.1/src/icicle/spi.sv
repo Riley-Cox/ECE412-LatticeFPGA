@@ -1,4 +1,4 @@
-`include "peripheral.sv"
+//`include "peripheral.sv"
 
 module spi_controller #(
   parameter logic [5:0] SPI_DIV = 4,
@@ -6,7 +6,7 @@ module spi_controller #(
 )(
   input  logic         clk,
   input  logic         reset_n,
-  input logic change,
+  input  logic         change,
 
   // Memory bus interface
   input  logic [31:0]  address_in,
@@ -22,7 +22,7 @@ module spi_controller #(
   output logic         spi_mosi,
   output logic         spi_cs_n,
   output logic         lcd_dc,
-  output logic 		color_start,
+  //output logic 		color_start,
   output logic 		changeOut
 );
 
@@ -55,11 +55,11 @@ module spi_controller #(
   //Change color module and logic
   
   logic [15:0] color;
-//  logic color_start;
+  logic color_start;
   logic color_hold;
   logic color_again; 
 
-  colorChange colorChange (clk, reset_n, 1'b0,changeOut, color, color_start);
+  colorChange colorChange (clk, reset_n, change,/*changeOut,*/ color, color_start);
   //assign color_start = '0;
 
   // Write detection logic
