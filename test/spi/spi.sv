@@ -58,6 +58,7 @@ module spi_controller #(
   logic color_start;
   logic color_hold;
   logic color_again; 
+  logic color_done;
 
   colorChange colorChange (clk, reset_n, change,/*changeOut,*/ color, color_start);
   //assign color_start = '0;
@@ -73,11 +74,13 @@ module spi_controller #(
       last_write_sel <= 1'b0;
       start_latched  <= 1'b0;
     end else begin
-      last_write_sel <= write_sel | color_start | color_again;
+      last_write_sel <= write_sel || (color_hold || color_again && !color_done);
        if (state != IDLE)
         start_latched <= 1'b0;
-      else if ((write_sel || color_start || color_again) && !last_write_sel && !spi_busy && !spi_done)
+      else if (write_sel && !last_write_sel && !spi_busy && !spi_done)
         start_latched <= 1'b1;
+	  else if ((color_start || color_again) && !last_write_sel && !spi_busy && !spi_done)
+		  start_latched <= 1'b1;
     end
   end
 
@@ -130,22 +133,27 @@ module spi_controller #(
     end
   end
 
+  //Color change control logic
   always_ff @(posedge clk or negedge reset_n) begin
 	if (!reset_n) begin
 		color_hold <= '0;
 		color_again <= '0;
+		color_done <= '0;
 	end
 	else if(state == IDLE && color_start) begin
 		color_hold <= '1;
 		color_again <= color_again;
+		color_done <= color_done;
 	end
 	else if(state == FINISH) begin
 		color_again <= color_hold;
 		color_hold <= '0;
+		color_done <= (color_hold | color_again);
 	end
 	else begin
 		color_hold <= color_hold;
 		color_again <= color_again;
+		color_done <= 0;
 	end
   end	
 
@@ -251,18 +259,18 @@ module spi_controller #(
       data_reg <= 8'h00;
       lcd_dc_reg <= 1'b0;
     end 
-    else if (color_start) begin
-	    data_reg <= color[7:0];
-    end
-    else if (color_again) begin
-	    data_reg <= color[15:8];
-    end
     else if (sel_in && |write_mask_in) begin
       case (offset)
         SPI_DATA_ADDR:   data_reg <= write_value_in[7:0];
         SPI_DC_ADDR:     lcd_dc_reg <= write_value_in[0];
         default: ;
       endcase
+    end
+	else if (color_start && !start_latched) begin
+	    data_reg <= color[7:0];
+    end
+    else if (color_again && !start_latched) begin
+	    data_reg <= color[15:8];
     end
   end
 

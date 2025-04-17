@@ -95,6 +95,7 @@ module top;
     #20;
     reset_n = 1;
     $display("[RESET RELEASED]");
+	#50 change = '1;
 
     
     mem_write(32'h00000000, 32'hA5A5A5A5); // Write to SPI_DATA_ADDR
@@ -137,8 +138,9 @@ module top;
     end
 	
 	
-	#50 change = '1;
-	//#150 change = '0;
+	
+	#150 change = '0;
+	#20 change = '1;
 	
     repeat (8) @(posedge spi_clk) begin
         mosi = mosi | spi_mosi;
