@@ -22,7 +22,7 @@ module top (
 
     /* Button */
     input brightPush,
-    input colorPush,
+(*PULLDOWN*)    input colorPush,
     output logic screenPower
 
 );
@@ -98,7 +98,6 @@ module top (
 		.spi_mosi(spi_mosi),
 		.spi_cs_n(spi_cs_n),
 		.lcd_dc(lcd_dc),
-		.color_start(color_start),
 		.changeOut(changeOut),
 	/* Button */
 	.brightPush(brightPush),

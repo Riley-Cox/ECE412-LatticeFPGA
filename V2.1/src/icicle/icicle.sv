@@ -268,7 +268,6 @@ module icicle (
         .spi_cs_n(spi_cs_n),
         .lcd_dc(lcd_dc),
 	.change(color),
-	.color_start(color_start),
 	.changeOut(changeOut)
     );
     
@@ -280,7 +279,7 @@ module icicle (
     );
 
     button colorButton(
-	.press(colorPush), 
+	.press(1'b0), 
 	.action(color),
 	.clk(clk),
 	.reset(!reset)
