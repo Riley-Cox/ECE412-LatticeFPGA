@@ -59,7 +59,7 @@ assign greset = reset | ssr;
 
     logic pll_clk;
     logic pll_locked_async;
-
+/**
     pll pll (
 `ifdef ECP5
         .clki(clk),
@@ -70,6 +70,13 @@ assign greset = reset | ssr;
 `endif
         .locked(pll_locked_async)
     );
+**/
+
+pll_risc u_pll (
+    .ref_clk_i(clk),       // 12 MHz input clock
+    .out_clk(pll_clk),     // 192 MHz output
+    .locked(pll_locked_async)    // PLL lock status
+);
 
     logic pll_locked;
 
