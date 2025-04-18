@@ -1,0 +1,16 @@
+Meeting Notes 18APR2025
+
+Nathan+Riley:
+  Issue with a signal being stuck at 1 that hijacks the initialization process. 16+hrs of debug, no progress. Simulation shows no issues.
+
+Mohammad:
+  Radiant work: Trying to get the PLL translated to the Radiant IP. May need help from Rahul on this
+
+Xiang:
+  Looking up OTS options for power stuff; two options
+    Rechargeable with boost<--- Find boost board that also offers charge port
+    9V with regulator, not rechargeable
+
+Haoyang:
+  3D modeling prototype done, just need to add two button ports and charger port. Need to add supports for PCB.
+  Starting PCB design. 
