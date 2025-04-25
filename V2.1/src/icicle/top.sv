@@ -11,6 +11,7 @@ module top (
     /* UART */
     input uart_rx,
     output logic uart_tx
+	
 );
 
     logic clk;
@@ -18,7 +19,7 @@ module top (
     HSOSC #(.CLKHF_DIV ("0b01")) inthosc (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(clk));
 
 
-    logic pll_clk;
+   (* keep *) logic pll_clk;
     logic pll_locked_async;
 /**
     pll pll (
@@ -32,12 +33,34 @@ module top (
         .locked(pll_locked_async)
     );
 **/
-
-pll_risc u_pll (
-    .ref_clk_i(clk),       // 12 MHz input clock
-    .out_clk(pll_clk),     // 192 MHz output
-    .locked(pll_locked_async)    // PLL lock status
+logic unused_clk;
+/**
+pll u_pll (
+    .ref_clk_i(clk),     // 12 MHz input from HFOSC
+    .rst_n_i(1'b1),            // Active-low reset; hold high for normal operation
+    .lock_o(pll_locked_async),       // Indicates when PLL is stable
+    .outcore_o(unused_clk),       
+	.outglobal_o(pll_clk)
 );
+**/
+
+
+    riscv_pll_ipgen_lscc_pll lscc_pll_inst (
+        .ref_clk_i(clk),
+        .rst_n_i(1'b1),
+        .feedback_i(1'b0),
+        .dynamic_delay_i(4'b0000),
+        .bypass_i(1'b0),
+        .latch_i(1'b0),
+        .lock_o(pll_locked_async),
+        .outcore_o(),
+        .outglobal_o(pll_clk),
+        .outcoreb_o(),
+        .outglobalb_o(),
+        .sclk_i(),
+        .sdi_i(),
+        .sdo_o()
+    );
 
     logic pll_locked;
     logic reset;
