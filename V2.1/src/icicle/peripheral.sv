@@ -79,23 +79,36 @@ module colorChange (input bit clock, reset_n,
 module brightness (input bit clock, reset, input logic change, output logic screenPower);
 	
 	logic [2:0] divider, count;
+	logic changed;
 	
 	always_ff@(posedge clock) begin
 		if (reset) begin
 			divider <= 0;
 			count <= 0;
 			end
-		else if (change) begin
+		else if (change && changed) begin
+			divider <= divider;
+			changed <= changed;
+			end
+		else if (change && !changed) begin
 			divider <= divider + 1;
-			end
-		else begin
-			count <= count +1;
-			if (count == divider) begin
-				screenPower <= '1;
-				count <= '0;
-				end
-			else 
-				screenPower <= '0;
-			end
+			changed <= '1;
 		end
+		else if (!change && changed) begin
+			divider <= divider;
+			changed <= '0;
+		end
+		else begin
+			divider <= divider;
+			changed <= changed;
+		end
+
+		count <= count +1;
+		if (count == divider) begin
+			screenPower <= '1;
+			count <= '0;
+		end
+		else 
+		screenPower <= '0;
+	end
 endmodule
