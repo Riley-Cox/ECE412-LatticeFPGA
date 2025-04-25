@@ -280,8 +280,8 @@ module icicle (
     );
 
     button colorButton(
-	.press('0), 
-	.action('0),
+	.press(colorPush), 
+	.action(color),
 	.clk(clk),
 	.reset(~reset)
     );

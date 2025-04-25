@@ -61,13 +61,12 @@ module spi_controller #(
   logic color_done;
   logic internChange;
 
-  initial begin
-    internChange = '0;
-  end
+  initial 
+	color_start <= '0;
 
 
-  colorChange colorChange (clk, reset_n, '0,/*changeOut,*/ color, );
- assign color_start = '0;
+  colorChange colorChange (clk, reset_n, change,/*changeOut,*/ color, color_start);
+// assign color_start = '0;
 
   // Write detection logic
   logic write_sel;

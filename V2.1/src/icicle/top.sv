@@ -101,8 +101,8 @@ module top (
 		//.changeOut(changeOut),
 		//.color_start(color_start),
 	/* Button */
-	.brightPush('0),
-	.colorPush('0),
+	.brightPush(~brightPush),
+	.colorPush(~colorPush),
 	.screenPower(screenPower)
 
     );
