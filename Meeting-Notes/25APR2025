@@ -1,0 +1,21 @@
+Meeting notes 25APR2025
+
+Nathan+Riley:
+  Fixed issues with button modules; not Radiant friendly. ColorChange module will have to write to memory for proper functionality. Buttons will need to connect to ground instead of 3V due to lack of internal pulldown resistors on Ice40UP5k. 
+  Fix for button issues confirms Radiant functionality issues should be centered around initial blocks that are ignored by Radiant synthesis (with other initialization issues)
+  Requested Haoyang to update button circuit, we aren't electrical engineers and our colorchange button is now a reset button. 
+  Current code is in branch "test/allEnabled"
+
+Mohammad:
+  Radiant is trying to force PLL onto an output pin. Radiant was forcing an implicit IP as a wrapper for our top.sv, editing the generated wrapper into top.sv allowed the PLL to be routed correctly. 
+  Next step is to add in the single cycle reset signal as discussed last week to properly initalize values that were being initialized improperly in Yosys toolchain.
+
+Xiang:
+  Pivoted to the test plan this week, draft complete. Needs reviewed this weekend. Nathan and Mohammad volunteered to help as needed. 
+  Ordered LiPo parts, waiting for them to get here. Expected delivery date: NLT 28APR2025. 
+  Nathan has temp sourcing available if needed.
+
+Haoyang:
+  PCB nearly complete, but we will need to rebuild the button circuits due to lack of pulldown resistors internal to ice40 boards. 
+  3D model on pause until we have all hardware and PCB in hand and complete. 
+
