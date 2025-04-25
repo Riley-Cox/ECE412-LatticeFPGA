@@ -21,9 +21,9 @@ module spi_controller #(
   output logic         spi_clk,
   output logic         spi_mosi,
   output logic         spi_cs_n,
-  output logic         lcd_dc,
-  //output logic 		color_start,
-  output logic 		changeOut
+  output logic         lcd_dc
+//  output logic 		color_start,
+//  output logic 		changeOut
 );
 
   localparam SPI_DATA_ADDR   = 32'h00000000;
@@ -61,11 +61,13 @@ module spi_controller #(
   logic color_done;
   logic internChange;
 
-  always_ff @(negedge reset_n)
-	  internChange <= '0;
+  initial begin
+    internChange = '0;
+  end
 
-  colorChange colorChange (clk, reset_n, internChange,/*changeOut,*/ color, color_start);
-  //assign color_start = '0;
+
+  colorChange colorChange (clk, reset_n, '0,/*changeOut,*/ color, );
+ assign color_start = '0;
 
   // Write detection logic
   logic write_sel;

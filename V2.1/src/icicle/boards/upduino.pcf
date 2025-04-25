@@ -12,14 +12,14 @@ set_io leds[4]   34
 set_io leds[5]   37
 set_io leds[6]   31
 set_io leds[7]   32
-set_io uart_rx   15
+set_io uart_rx   9
 set_io uart_tx   14 
 set_io spi_mosi  27
 set_io spi_clk   26
 set_io spi_cs_n  28
 set_io lcd_dc    23
 set_io brightPush 38
-set_io colorPush 9
-set_io screenPower 25
-set_io color_start 19
-set_io changeOut 18
+set_io -pullup yes -pullup_resistor 10K colorPush 15
+set_io -pullup yes -pullup_resistor 10K screenPower 25
+#set_io color_start 19
+#set_io changeOut 18

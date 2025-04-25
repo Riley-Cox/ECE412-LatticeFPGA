@@ -1,4 +1,4 @@
-module button (input logic press,input bit clk, reset, output logic action);
+module button (input bit press,input bit clk, reset, output logic action);
 
 always_ff @(posedge clk or negedge reset) begin
 	if (!reset)
@@ -12,10 +12,11 @@ end
 
 endmodule
 
-module colorChange (input bit clock, reset_n, input logic change, /*output logic changeout,*/ output logic [15:0] color, output logic ready);
-
+module colorChange (input bit clock, reset_n, input logic change, /*output logic changeout,*/ output logic [15:0] color, output logic internChange);
 	logic [15:0] colorArray [15:0];
 	logic [3:0] index;
+  assign internChange = '0;
+  logic ready;
 	//assign changeout = change;
 	assign colorArray [0] = 16'hF801;
 	assign colorArray [1] = 16'h07E0;
@@ -34,7 +35,6 @@ module colorChange (input bit clock, reset_n, input logic change, /*output logic
 	assign colorArray [14] = 16'hFE01;
 	assign colorArray [15] = 16'hA5A5;
 	logic changed;
-
 	
 	always_ff @(negedge reset_n or posedge clock) begin
 		if (!reset_n) begin
@@ -53,7 +53,7 @@ module colorChange (input bit clock, reset_n, input logic change, /*output logic
 			color <= colorArray[index];
 			index <= index+1;
 			changed <= '1;
-			ready <= '1;
+			ready <= '0;
 			end
 		else if (changed && !change) begin
 			ready <= '0;

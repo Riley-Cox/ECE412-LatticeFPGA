@@ -17,12 +17,12 @@ module top (
 	output logic spi_mosi,
 	output logic spi_cs_n,
 	output logic lcd_dc,
-	output logic color_start,
-	output logic changeOut,
+//	output logic color_start,
+//	output logic changeOut,
 
     /* Button */
-    input brightPush,
-(*PULLDOWN*)    input colorPush,
+(*PULLUP*)     input bit brightPush,
+ (*PULLUP*)    input bit colorPush,
     output logic screenPower
 
 );
@@ -98,10 +98,11 @@ module top (
 		.spi_mosi(spi_mosi),
 		.spi_cs_n(spi_cs_n),
 		.lcd_dc(lcd_dc),
-		.changeOut(changeOut),
+		//.changeOut(changeOut),
+		//.color_start(color_start),
 	/* Button */
-	.brightPush(brightPush),
-	.colorPush(colorPush),
+	.brightPush('0),
+	.colorPush('0),
 	.screenPower(screenPower)
 
     );

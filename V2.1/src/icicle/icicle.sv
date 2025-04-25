@@ -50,8 +50,8 @@ module icicle (
     output logic changeOut,
 
     output logic screenPower,
-    input brightPush,
-    input colorPush
+    input bit  brightPush,
+    input bit  colorPush
 );
     logic [31:0] instr_address;
     logic instr_read;
@@ -267,22 +267,23 @@ module icicle (
         .spi_mosi(spi_mosi),
         .spi_cs_n(spi_cs_n),
         .lcd_dc(lcd_dc),
-	.change(color),
-	.changeOut(changeOut)
+	.change(color)
+	//.color_start(color_start),
+	//.changeOut(changeOut)
     );
     
     button pwmButton(
 	.press(brightPush),
 	.action(bright),
 	.clk(clk),
-	.reset(!reset)
+	.reset(~reset)
     );
 
     button colorButton(
-	.press(1'b0), 
-	.action(color),
+	.press('0), 
+	.action('0),
 	.clk(clk),
-	.reset(!reset)
+	.reset(~reset)
     );
 
     brightness screenBright(
