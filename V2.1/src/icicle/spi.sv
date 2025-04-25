@@ -1,4 +1,3 @@
-`include "peripheral.sv"
 
 module spi_controller #(
   parameter logic [5:0] SPI_DIV = 4,
@@ -21,8 +20,12 @@ module spi_controller #(
   output logic         spi_clk,
   output logic         spi_mosi,
   output logic         spi_cs_n,
-  output logic         lcd_dc
+  output logic         lcd_dc,
+
+  // Test pin
+  output logic test_out
 );
+  //assign test_out = change;
 
   localparam SPI_DATA_ADDR   = 32'h00000000;
   localparam SPI_CTRL_ADDR   = 32'h00000004;
@@ -58,11 +61,12 @@ module spi_controller #(
   logic color_start;
   logic color_latch;
 
-  initial 
-	color_start <= '0;
-
-
-  colorChange colorChange (clk, reset_n, change, color, color_start);
+  colorChange colorChange (.clock(clk), 
+	  .reset_n(reset_n), 
+	  .change(change), 
+	  .color(color), 
+	  .ready(color_start), 
+	  .test_out(test_out));
 
   // Write detection logic
   logic write_sel;
@@ -258,14 +262,6 @@ module spi_controller #(
         default: ;
       endcase
     end
-    /*
-	else if (color_start && !start_latched) begin
-	    data_reg <= color[7:0];
-    end
-    else if (color_again && !start_latched) begin
-	    data_reg <= color[15:8];
-    end
-    */
   end
 
   // Acknowledge done signal when CPU reads SPI_STATUS

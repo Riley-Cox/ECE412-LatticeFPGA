@@ -12,12 +12,17 @@ end
 
 endmodule
 
-module colorChange (input bit clock, reset_n, input logic change, /*output logic changeout,*/ output logic [15:0] color, output logic ready);
+module colorChange (input bit clock, reset_n, 
+	input bit change, 
+	output logic [15:0] color, 
+	output logic ready,
+	output logic test_out
+	);
+	assign test_out = ready;
+
 	logic [15:0] colorArray [15:0];
 	logic [3:0] index;
-  //assign internChange = '0;
-  //logic ready;
-	//assign changeout = change;
+
 	assign colorArray [0] = 16'hF801;
 	assign colorArray [1] = 16'h07E0;
 	assign colorArray [2] = 16'h001F;
@@ -53,7 +58,7 @@ module colorChange (input bit clock, reset_n, input logic change, /*output logic
 			color <= colorArray[index];
 			index <= index+1;
 			changed <= '1;
-			ready <= '0;
+			ready <= '1;
 			end
 		else if (changed && !change) begin
 			ready <= '0;

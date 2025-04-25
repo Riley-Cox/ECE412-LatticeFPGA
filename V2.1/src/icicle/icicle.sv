@@ -5,6 +5,7 @@
 `include "timer.sv"
 `include "uart.sv"
 `include "spi.sv"
+`include "peripheral.sv"
 
 `ifdef ECP5
 `define RAM_SIZE 8192
@@ -51,8 +52,8 @@ module icicle (
 
     output logic screenPower,
     input bit  brightPush,
-    input bit  colorPush
-    output bit test_out;
+    input bit  colorPush,
+    output bit test_out
 );
     logic [31:0] instr_address;
     logic instr_read;
@@ -268,9 +269,8 @@ module icicle (
         .spi_mosi(spi_mosi),
         .spi_cs_n(spi_cs_n),
         .lcd_dc(lcd_dc),
-	.change(color)
-	//.color_start(color_start),
-	//.changeOut(changeOut)
+	.change(color),
+	.test_out(test_out)
     );
     
     button pwmButton(
@@ -293,6 +293,5 @@ module icicle (
 	.change(bright),
 	.screenPower(screenPower)
     );
-   assign test_out = color; 
 
 endmodule

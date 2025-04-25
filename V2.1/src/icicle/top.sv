@@ -19,12 +19,12 @@ module top (
 	output logic lcd_dc,
 
     /* Button */
-(*PULLUP*)     input bit brightPush,
+ (*PULLUP*)    input bit brightPush,
  (*PULLUP*)    input bit colorPush,
-    output logic screenPower
+    output logic screenPower,
 
     //Test signal
-    output bit test_out;
+    output bit test_out
 
 );
 
@@ -104,4 +104,5 @@ module top (
 	.test_out(test_out)
 
     );
+
 endmodule
