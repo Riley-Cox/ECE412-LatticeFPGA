@@ -11,6 +11,9 @@
 #define SPI_CTRL    (*(volatile uint32_t*) 0x00041004)
 #define SPI_STATUS  (*(volatile uint32_t*) 0x00041008)
 #define SPI_DC      (*(volatile uint32_t*) 0x0004100C)
+#define SPI_COLOR_ADDR (*(volatile unsigned int*) 0x00041010)
+#define SPI_BUTTON_ADDR (*(volatile unsigned int*) 0x00041014)
+
 
 #define SPI_BUSY    (SPI_STATUS & 0x01)
 
@@ -240,7 +243,12 @@ int main(void) {
         }
     }
 
-    while (1);  // Idle loop
-
+    while (1){
+      if (SPI_BUTTON_ADDR & 0x1){
+        unsigned short color = SPI_COLOR_ADDR & 0xFFFF;
+        fill_screen(color);
+    }
+    st7735_delay_ms(500);
+  }  
     return 0;
 }
