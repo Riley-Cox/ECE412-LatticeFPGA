@@ -56,6 +56,7 @@ module spi_controller #(
   
   logic [15:0] color;
   logic color_start;
+  logic color_latch;
 
   initial 
 	color_start <= '0;
@@ -131,31 +132,23 @@ module spi_controller #(
     end
   end
 
-  /*
+  
   //Color change control logic
   always_ff @(posedge clk or negedge reset_n) begin
 	if (!reset_n) begin
-		color_hold <= '0;
-		color_again <= '0;
-		color_done <= '0;
+		color_latch <= '0;
 	end
-	else if(state == IDLE && color_start) begin
-		color_hold <= '1;
-		color_again <= color_again;
-		color_done <= color_done;
+	else if(color_start && !start_latched) begin
+		color_latch <= '1;
 	end
 	else if(state == FINISH) begin
-		color_again <= color_hold;
-		color_hold <= '0;
-		color_done <= (color_hold | color_again);
+		color_latch <= '0;
 	end
 	else begin
-		color_hold <= color_hold;
-		color_again <= color_again;
-		color_done <= 0;
+		color_latch <= color_latch;
 	end
   end	
-*/
+
 		
 
   //Control logic
