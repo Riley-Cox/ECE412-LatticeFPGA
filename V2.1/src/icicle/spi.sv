@@ -283,7 +283,7 @@ module spi_controller #(
       case (offset)
         SPI_STATUS_ADDR: read_value_out = {30'b0, spi_done, spi_busy};
 	SPI_COLOR_ADDR: read_value_out = {16'b0, color};
-	SPI_BUTTON_ADDR: read_value_out = {31'b0, color_start};
+	SPI_BUTTON_ADDR: read_value_out = {31'b0, color_latch};
         default:          read_value_out = 32'h00000000;
       endcase
     end

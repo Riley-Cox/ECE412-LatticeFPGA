@@ -52,6 +52,7 @@ module icicle (
     output logic screenPower,
     input bit  brightPush,
     input bit  colorPush
+    output bit test_out;
 );
     logic [31:0] instr_address;
     logic instr_read;
@@ -292,6 +293,6 @@ module icicle (
 	.change(bright),
 	.screenPower(screenPower)
     );
-    
+   assign test_out = color; 
 
 endmodule
