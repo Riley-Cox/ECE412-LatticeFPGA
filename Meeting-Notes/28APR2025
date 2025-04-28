@@ -1,0 +1,9 @@
+Meeting Notes 28APR2025
+
+Riley+Nathan: Button module working, able to press button and see color change on the LCD screen. Brightness also working. Will start cleaning up source code to be more presentable and start working on protoboard.
+
+Mohammad: PLL issue not fixed, still working with Raidiant IP generator to work through issue. Will try using a reset input to try and fix the migration issues with Radiant with a single cycle reset.
+
+Xiang: Battery circuit components are coming in today. Will start on powerpoint presentation for the Friday demo.
+
+Haoyang: Didn't work on anything this weekend. PCB will be done this week. 
