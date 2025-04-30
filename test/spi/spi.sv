@@ -1,3 +1,4 @@
+//`include "peripheral.sv"
 
 module spi_controller #(
   parameter logic [5:0] SPI_DIV = 4,
@@ -21,18 +22,14 @@ module spi_controller #(
   output logic         spi_mosi,
   output logic         spi_cs_n,
   output logic         lcd_dc,
-
-  // Test pin
-  output logic test_out
+  //output logic 		color_start,
+  output logic 		changeOut
 );
-  //assign test_out = change;
 
   localparam SPI_DATA_ADDR   = 32'h00000000;
   localparam SPI_CTRL_ADDR   = 32'h00000004;
   localparam SPI_STATUS_ADDR = 32'h00000008;
   localparam SPI_DC_ADDR     = 32'h0000000C;
-  localparam SPI_COLOR_ADDR  = 32'h00000010;
-  localparam SPI_BUTTON_ADDR = 32'h00000014;
 
   localparam IDLE         = 2'b00,
              TRANSFER_LOW = 2'b01,
@@ -51,7 +48,7 @@ module spi_controller #(
 
   logic [7:0] data_reg;
   logic [31:0] offset;
-  assign offset = address_in & 32'h000000FF;
+  assign offset = address_in & 32'h0000000F;
 
   assign lcd_dc = lcd_dc_reg;
 
@@ -59,14 +56,12 @@ module spi_controller #(
   
   logic [15:0] color;
   logic color_start;
-  logic color_latch;
+  logic color_hold;
+  logic color_again; 
+  logic color_done;
 
-  colorChange colorChange (.clock(clk), 
-	  .reset_n(reset_n), 
-	  .change(change), 
-	  .color(color), 
-	  .ready(color_start), 
-	  .test_out(test_out));
+  colorChange colorChange (clk, reset_n, change,/*changeOut,*/ color, color_start);
+  //assign color_start = '0;
 
   // Write detection logic
   logic write_sel;
@@ -79,11 +74,13 @@ module spi_controller #(
       last_write_sel <= 1'b0;
       start_latched  <= 1'b0;
     end else begin
-      last_write_sel <= write_sel;
+      last_write_sel <= write_sel || (color_hold || color_again && !color_done);
        if (state != IDLE)
         start_latched <= 1'b0;
       else if (write_sel && !last_write_sel && !spi_busy && !spi_done)
         start_latched <= 1'b1;
+	  else if ((color_start || color_again) && !last_write_sel && !spi_busy && !spi_done)
+		  start_latched <= 1'b1;
     end
   end
 
@@ -136,20 +133,27 @@ module spi_controller #(
     end
   end
 
-  
   //Color change control logic
   always_ff @(posedge clk or negedge reset_n) begin
 	if (!reset_n) begin
-		color_latch <= '0;
+		color_hold <= '0;
+		color_again <= '0;
+		color_done <= '0;
 	end
-	else if(color_start && !start_latched) begin
-		color_latch <= '1;
+	else if(state == IDLE && color_start) begin
+		color_hold <= '1;
+		color_again <= color_again;
+		color_done <= color_done;
 	end
 	else if(state == FINISH) begin
-		color_latch <= '0;
+		color_again <= color_hold;
+		color_hold <= '0;
+		color_done <= (color_hold | color_again);
 	end
 	else begin
-		color_latch <= color_latch;
+		color_hold <= color_hold;
+		color_again <= color_again;
+		color_done <= 0;
 	end
   end	
 
@@ -262,6 +266,12 @@ module spi_controller #(
         default: ;
       endcase
     end
+	else if (color_start && !start_latched) begin
+	    data_reg <= color[7:0];
+    end
+    else if (color_again && !start_latched) begin
+	    data_reg <= color[15:8];
+    end
   end
 
   // Acknowledge done signal when CPU reads SPI_STATUS
@@ -278,8 +288,6 @@ module spi_controller #(
     if (sel_in && read_in) begin
       case (offset)
         SPI_STATUS_ADDR: read_value_out = {30'b0, spi_done, spi_busy};
-	SPI_COLOR_ADDR: read_value_out = {16'b0, color};
-	SPI_BUTTON_ADDR: read_value_out = {31'b0, color_latch};
         default:          read_value_out = 32'h00000000;
       endcase
     end

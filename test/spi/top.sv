@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-
+//`include "../../V2.1/src/icicle/spi.sv"
 module top;
 
   logic clk;
@@ -13,6 +13,9 @@ module top;
   logic [31:0] write_value_in;
   logic [31:0] read_value_out;
   logic ready_out;
+  logic change;
+  logic pressed;
+  logic color_start;
 
   int clk_cnt, shift_cnt;
   
@@ -36,10 +39,14 @@ module top;
     .spi_clk(spi_clk),
     .spi_mosi(spi_mosi),
     .spi_cs_n(spi_cs_n),
-    .lcd_dc(lcd_dc)
+    .lcd_dc(lcd_dc),
+    //.color_start(color_start),
+    //.color_hold(color_hold),
+    //.color_again(color_again),
+    .change(pressed)
   );
 
-  
+  button buttonTest(change, clk, reset_n, pressed);
   always #5 clk = ~clk; // 100 MHz clock
   
 
@@ -82,11 +89,13 @@ module top;
     read_in = 0;
     write_mask_in = 0;
     write_value_in = 0;
+	change = 0;
 
     
     #20;
     reset_n = 1;
     $display("[RESET RELEASED]");
+	#50 change = '1;
 
     
     mem_write(32'h00000000, 32'hA5A5A5A5); // Write to SPI_DATA_ADDR
@@ -99,15 +108,62 @@ module top;
         mosi = mosi << 1;
         shift_cnt++;
         end
+		else mosi = '0;
     end
+	
+
 
     
     mem_write(32'h0000000C, 32'h00000001); // Set lcd_dc
 
+	
+	#20;
+    reset_n = 1;
+    $display("[RESET RELEASED]");
+	shift_cnt = '0;
+	#20;
+
+    
+    mem_write(32'h00000000, 32'hA5A5A5A5); // Write to SPI_DATA_ADDR
+    mem_write(32'h00000004, 32'h00000001); // Write to SPI_CTRL_ADDR to start
+
+    repeat (8) @(posedge spi_clk) begin
+      mem_read(32'h00000008); // Read SPI_STATUS_ADDR
+        mosi = mosi | spi_mosi;
+        if (shift_cnt < 7)begin
+        mosi = mosi << 1;
+        shift_cnt++;
+        end
+		else mosi = '0;
+    end
+	
+	
+	
+	#150 change = '0;
+	#20 change = '1;
+	
+    repeat (8) @(posedge spi_clk) begin
+        mosi = mosi | spi_mosi;
+        if (shift_cnt < 15)begin
+        mosi = mosi << 1;
+        shift_cnt++;
+        end
+		else mosi = '0;
+    end
+
+	    repeat (8) @(posedge spi_clk) begin
+        mosi = mosi | spi_mosi;
+        if (shift_cnt < 23)begin
+        mosi = mosi << 1;
+        shift_cnt++;
+        end
+		else mosi = '0;
+    end
     #100;
     $display("Test complete");
     $display("MOSI: %h", mosi);
-    $finish;
+    //$finish;
+	$stop;
   end
 
 endmodule
