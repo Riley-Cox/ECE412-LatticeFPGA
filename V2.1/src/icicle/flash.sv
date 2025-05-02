@@ -43,10 +43,13 @@ module flash (
     assign read_value_out = sel_in ? {read_value[7:0], read_value[15:8], read_value[23:16], read_value[31:24]} : 0;
     assign ready_out = sel_in && state == `FLASH_STATE_DONE;
 
-    initial
-        state <= `FLASH_STATE_IDLE;
-
-    always_ff @(posedge clk) begin
+always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= `FLASH_STATE_IDLE;
+            bits <= 5'bx;
+            io0_out <= 1'bx;
+            read_value <= 32'bx;
+        end else begin
         case (state)
             `FLASH_STATE_IDLE: begin
                 if (sel_in && read_in) begin
