@@ -21,6 +21,18 @@ module top (
 
    (* keep *) logic pll_clk;
     logic pll_locked_async;
+	
+	reg ff_reset;
+	reg reset_out;
+	logic icicle_reset;
+	always_ff @(posedge clk) begin
+		if(!ff_reset) begin
+			reset_out <= 1'b1;
+			ff_reset <= 1'b1;
+		end else begin
+			reset_out <= 1'b0;
+		end
+	end
 /**
     pll pll (
 `ifdef ECP5
@@ -43,9 +55,9 @@ pll u_pll (
 	.outglobal_o(pll_clk)
 );
 **/
+/**
 
-
-    riscv_pll_ipgen_lscc_pll lscc_pll_inst (
+    (* ORIG_MODULE_NAME="riscv_pll", LATTICE_IP_GENERATED="1" *) riscv_pll_ipgen_lscc_pll lscc_pll_inst (
         .ref_clk_i(clk),
         .rst_n_i(1'b1),
         .feedback_i(1'b0),
@@ -53,13 +65,20 @@ pll u_pll (
         .bypass_i(1'b0),
         .latch_i(1'b0),
         .lock_o(pll_locked_async),
-        .outcore_o(),
-        .outglobal_o(pll_clk),
+        .outcore_o(pll_clk),
+        .outglobal_o(),
         .outcoreb_o(),
         .outglobalb_o(),
         .sclk_i(),
         .sdi_i(),
         .sdo_o()
+    );
+**/
+    simple_pll u_pll (
+        .ref_clk_i(clk),
+        .rst_n_i(1'b1),
+        .lock_o(pll_locked_async),
+        .pll_clk_out(pll_clk)
     );
 
     logic pll_locked;
@@ -67,7 +86,13 @@ pll u_pll (
 
     logic [3:0] reset_count = '0;
 
+logic [23:0] blink_counter;
 
+always_ff @(posedge pll_clk) begin
+    blink_counter <= blink_counter + 1;
+end
+
+assign leds = blink_counter[23:16];
     always_ff @(posedge pll_clk) begin
         if (&reset_count) begin
             if (pll_locked) begin
@@ -81,6 +106,8 @@ pll u_pll (
             reset_count <= reset_count + pll_locked;
         end
     end
+	
+assign icicle_reset = reset | reset_out;
 
     sync sync (
         .clk(pll_clk),
@@ -90,7 +117,7 @@ pll u_pll (
 
     icicle icicle (
         .clk(pll_clk),
-        .reset(reset),
+        .reset(icicle_reset),
 
         /* LEDs */
         .leds(leds),
