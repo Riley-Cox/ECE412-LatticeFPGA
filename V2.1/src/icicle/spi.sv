@@ -25,7 +25,6 @@ module spi_controller #(
   // Test pin
   output logic test_out
 );
-  //assign test_out = change;
 
   localparam SPI_DATA_ADDR   = 32'h00000000;
   localparam SPI_CTRL_ADDR   = 32'h00000004;
@@ -66,7 +65,8 @@ module spi_controller #(
 	  .change(change), 
 	  .color(color), 
 	  .ready(color_start), 
-	  .test_out(test_out));
+	  .test_out(test_out)
+  );
 
   // Write detection logic
   logic write_sel;
