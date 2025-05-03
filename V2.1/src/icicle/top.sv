@@ -122,7 +122,7 @@ pll u_pll (
     logic pll_locked;
 
     logic [3:0] reset_count = '0;
-
+/**
 logic [23:0] blink_counter;
 
 always_ff @(posedge pll_clk) begin
@@ -143,7 +143,7 @@ assign leds = blink_counter[23:16];
             reset_count <= reset_count + pll_locked;
         end
     end
-	
+**/	
 assign icicle_reset = reset | reset_out;
 
     sync sync (
