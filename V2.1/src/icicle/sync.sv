@@ -4,7 +4,7 @@
 module sync #(
     parameter BITS = 1
 ) (
-    input clk,
+    input logic clk,
     input [BITS-1:0] in,
     output logic [BITS-1:0] out
 );
