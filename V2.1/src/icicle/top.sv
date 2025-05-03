@@ -74,12 +74,13 @@ pll u_pll (
         .sdo_o()
     );
 **/
-    simple_pll u_pll (
+    pll_gen u_pll (
         .ref_clk_i(clk),
         .rst_n_i(1'b1),
-        .lock_o(pll_locked_async),
-        .pll_clk_out(pll_clk)
+        .outcore_o(pll_clk),
+        .lock_o(pll_locked_async)
     );
+
 
     logic pll_locked;
     logic reset;
@@ -93,6 +94,7 @@ always_ff @(posedge pll_clk) begin
 end
 
 assign leds = blink_counter[23:16];
+**/
     always_ff @(posedge pll_clk) begin
         if (&reset_count) begin
             if (pll_locked) begin
@@ -105,8 +107,7 @@ assign leds = blink_counter[23:16];
             reset <= 1;
             reset_count <= reset_count + pll_locked;
         end
-    end
-**/	
+    end	
 assign icicle_reset = reset | reset_out;
 
     sync sync (
