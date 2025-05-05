@@ -1,0 +1,23 @@
+Meeting Notes 05MAY2025
+
+Haoyang:
+  PCB Design in progress; should be done Tue/Wed
+  
+
+Riley:
+  Update user guide for toolchain
+  Get additional info on GitHub
+
+Nathan:
+  Tested the battery using the 5V inputs
+  Will solder USB port onto 5V board and connect it to the PCB instead
+
+Xiang:
+  Will start adding documentation/final report and help with cleanup
+
+Mohammad:
+  Got Icicle to instantiate everything in the netlist
+  Timing issues are back - have to take the clock down to 8MHz?
+  Timing problem is between fetch and execute - dig into why these have a connection?
+  PNR takes over 30 minutes right now, just an FYI. 
+
