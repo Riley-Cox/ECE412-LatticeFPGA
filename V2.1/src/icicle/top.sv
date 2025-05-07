@@ -23,10 +23,28 @@ module top (
     input bit colorPush,
     output logic screenPower,
 
+    /* ssr */
+     (* PULLUP *) input logic r,
+
     //Test signal
     output bit test_out
 
 );
+
+
+logic reset, greset, ssr, q, qBar;
+
+always_ff @(posedge pll_clk) begin
+	q <= r;
+end
+assign qBar = ~q;
+assign ssr = qBar & r;	
+	
+
+assign greset = reset | ssr;
+
+
+
 
 	
 `ifdef INTERNAL_OSC
@@ -54,7 +72,6 @@ module top (
     );
 
     logic pll_locked;
-    logic reset;
 
     logic [3:0] reset_count = '0;
 
@@ -81,7 +98,7 @@ module top (
 
     icicle icicle (
         .clk(pll_clk),
-        .reset(reset),
+        .reset(greset),
 
         /* LEDs */
         .leds(leds),

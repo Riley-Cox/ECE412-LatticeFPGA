@@ -22,3 +22,4 @@ set_io -pullup yes -pullup_resistor 10K brightPush 9
 set_io -pullup yes -pullup_resistor 10K colorPush 38
 set_io  screenPower 25
 set_io test_out 19
+set_io r 18
