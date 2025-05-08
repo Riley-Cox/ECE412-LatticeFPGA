@@ -1,6 +1,6 @@
 # ECE412-LatticeFPGA
 ## WSL Setup
-- Install the Terminal app on the Mircosoft Store
+- Install the Terminal app on the Microsoft Store
 - Install a Linux Distribution from the Microsoft Store, Debian was used for this project
 - Install usbipd through PowerShell by using the following command
   
