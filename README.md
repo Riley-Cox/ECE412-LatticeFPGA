@@ -30,19 +30,21 @@ sudo pacman -Syu autoconf automake curl python3 libmpc mpfr gmp gawk base-devel 
 - From your home directory, clone the RISC-V GNU toolchain from the following repo 
 
   ```
-  git clone --recursive https://github.com/riscv/riscv-gnu-toolchain
+  git clone https://github.com/riscv/riscv-gnu-toolchain
   ```
 
 - From your home directory, open your shell rc file to edit (`vim .zshrc` or `vim .bashrc`) and add
   ```
   export PATH="<writeable directory>:$PATH"
   ```
+  Ex: `export PATH="$HOME/Documents/riscv-toolchain/bin:$PATH"`
 - Then run `source .zshrc` if using zsh or `source .bashrc` if using bash
   
 - `cd` into the riscv-gnu-toolchain directory, run
   ```
   ./configure --prefix=<writeable directory>
   ```
+  Ex: `./configure --prefix=$HOME/Documents/riscv-toolchain`
 - then run `make -j$(nproc)`
   
   
