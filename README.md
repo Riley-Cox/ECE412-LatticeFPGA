@@ -1,13 +1,13 @@
 # ECE412-LatticeFPGA
 ## WSL Setup
-- Install the Terminal app on the Mircosoft Store
+- Install the Terminal app on the Microsoft Store
 - Install a Linux Distribution from the Microsoft Store, Debian was used for this project
 - Install usbipd through PowerShell by using the following command
   
   ```
   winget install --interactive --exact dorssel.usbipd-win
   ```
-- To ensure that it is installed run `usbipd list` , you should see your usb device with its BusID 
+- To ensure that it is installed run `usbipd list` , you should see your usb device with its BusID (the UPduino should show up as "serial converter")
 - A USB bind is needed. Open Powershell as Admin, then run `usbipd bind --busid <busid>`
 - To attach a USB to WSL run `usbipd attach --wsl --busid <busid>`
 - In WSL, the device should show up when `lsusb` is ran
@@ -30,20 +30,26 @@ sudo pacman -Syu autoconf automake curl python3 libmpc mpfr gmp gawk base-devel 
 - From your home directory, clone the RISC-V GNU toolchain from the following repo 
 
   ```
-  git clone --recursive https://github.com/riscv/riscv-gnu-toolchain
+  git clone https://github.com/riscv/riscv-gnu-toolchain
   ```
 
 - From your home directory, open your shell rc file to edit (`vim .zshrc` or `vim .bashrc`) and add
   ```
   export PATH="<writeable directory>:$PATH"
   ```
+  Note that the path you choose for the `<writeable directory>` should end with /bin
+  
+  Ex: `export PATH="$HOME/Documents/riscv-toolchain/bin:$PATH"`
 - Then run `source .zshrc` if using zsh or `source .bashrc` if using bash
   
 - `cd` into the riscv-gnu-toolchain directory, run
   ```
   ./configure --prefix=<writeable directory>
   ```
-- then run `make -j$(nproc)`
+  Note that this `<writeable directory>` does not need to include /bin
+  
+  Ex: `./configure --prefix=$HOME/Documents/riscv-toolchain`
+- then run `make`
   
   
 ## Open Source Toolchain Setup
@@ -63,7 +69,11 @@ sudo dnf install yosys icestorm nextpnr
 
 ## Building on the UPduino board
 - Clone this repo
-- Navigate to `V2.1/src/icicle`
+  ```
+  git clone https://github.com/Riley-Cox/ECE412-LatticeFPGA.git
+  ```
+  
+- Navigate to `ECE412-LatticeFPGA/V2.1/src/icicle` 
 - Run `make clean`
 - Run `make BOARD=upduino`
 - Run `sudo iceprog top.bin`
