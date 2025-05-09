@@ -49,7 +49,7 @@ sudo pacman -Syu autoconf automake curl python3 libmpc mpfr gmp gawk base-devel 
   Note that this `<writeable directory>` does not need to include /bin
   
   Ex: `./configure --prefix=$HOME/Documents/riscv-toolchain`
-- then run `make -j$(nproc)`
+- then run `make`
   
   
 ## Open Source Toolchain Setup
