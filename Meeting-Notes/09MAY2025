@@ -1,0 +1,27 @@
+Meeting Notes 09MAY2025
+
+Mohammad: (slowly losing his mind)
+  Radiant issues persist;
+    Used SSR from Nathan/Riley implementation
+    Timing issues solved; issue between PLL and HSOSC solved (create clock directive in constraint files)
+    Program not running correctly. Will troubleshoot using the protoboard to see if the issue is Icicle specific or the entire bit stream.
+  Cookies for Mohammad; started on Radiant user guide while working !!!!!!!
+
+Xiang:
+  Still working on documentation. Will provide itemized list of needs from other team members.
+  Will provide templates for team members to fill out dev guide as needed
+  Draft due end of May
+
+Haoyang:
+  PCB work continued; redesigned footprint for UPDuino to match V2.1 instead of V3.x
+  Will provide Nathan w/ daily updates on PCB until it's complete with requests for assistance as needed
+
+Nathan:
+  Battery no longer needs USB connector for Icicle to work correctly; implemented a single cycle reset on startup to force PC to be at a known value on start
+  Helped verify user guide
+
+Riley:
+  Helped with single cycle reset implementation
+  "Finalized" user guide - needs independent verification (will probably ask Violet)
+
+All team members not actively with tasks will help Haoyang as needed with PCB design; largest remaining technical item.
