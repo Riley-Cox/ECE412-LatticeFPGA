@@ -1,0 +1,4 @@
+create_clock -name {pll_clk} -period 61.98 -waveform {0 30.99} [get_nets pll_clk]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS33 DRIVE=NA PULLMODE=100K} [get_ports r]
+ldc_set_location -site {18} [get_ports r]
+
