@@ -4,8 +4,8 @@
 `include "rv32.sv"
 `include "timer.sv"
 `include "uart.sv"
-`include "spi.sv"
-`include "peripheral.sv"
+//`include "spi.sv"
+//`include "peripheral.sv"
 
 `ifdef ECP5
 `define RAM_SIZE 8192

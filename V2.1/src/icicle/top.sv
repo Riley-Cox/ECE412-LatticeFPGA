@@ -1,7 +1,8 @@
-`include "defines.sv"
-`include "icicle.sv"
-`include "pll.sv"
+//`include "defines.sv"
+//`include "icicle.sv"
+//`include "pll.sv"
 `include "sync.sv"
+`define INTERNAL_OSC
 
 module top (
 
@@ -31,9 +32,9 @@ module top (
 
 );
 
-
-logic reset, greset, ssr, q, qBar;
-
+	
+logic greset, ssr, qBar, reset /* syn_keep = 1 */; 
+logic q /* syn_keep = 1 */; 
 always_ff @(posedge pll_clk) begin
 	q <= r;
 end
@@ -50,11 +51,7 @@ assign greset = reset | ssr;
 `ifdef INTERNAL_OSC
     logic clk;
 
-    SB_HFOSC inthosc (
-	.CLKHFPU(1'b1),
-	.CLKHFEN(1'b1),
-	.CLKHF(clk)
-    );
+	HSOSC #(.CLKHF_DIV ("0b01")) inthosc (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(clk));
 `endif
 
    (* keep *) logic pll_clk;
@@ -75,7 +72,7 @@ logic unused_clk;
 
     logic pll_locked;
 
-    logic [3:0] reset_count = '0;
+    logic [3:0] reset_count;
 /**
 logic [23:0] blink_counter;
 
@@ -100,17 +97,7 @@ assign leds = blink_counter[23:16];
     end	
 	
 
-	
-logic greset, ssr, qBar /* syn_keep = 1 */; 
-logic q /* syn_keep = 1 */; 
-always_ff @(posedge pll_clk) begin
-	q <= r;
-end
-assign qBar = ~q;
-assign ssr = qBar & r;	
-	
 
-assign greset = reset | ssr;
 
     sync sync (
         .clk(pll_clk),
