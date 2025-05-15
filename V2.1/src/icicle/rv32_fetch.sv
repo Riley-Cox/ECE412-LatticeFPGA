@@ -116,11 +116,11 @@ module rv32_fetch #(
         else
             next_pc = pc + branch_offset;
     end
-
+/**
     initial begin
         instr_out <= `RV32_INSTR_NOP;
     end
-
+**/
     always_ff @(posedge clk) begin
         if (pcgen_stall_in) begin
             if (!overwrite_pc && (trap_in || branch_mispredicted_in)) begin
