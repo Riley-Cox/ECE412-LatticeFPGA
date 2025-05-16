@@ -1,0 +1,22 @@
+Meeting Notes 15MAY2025
+
+Nathan: 
+  Worked on PCB, changed PCB design. 
+  Helped troublshoot userguide.
+
+Riley: 
+  Worked on userguide documentation, updated after input from peer. 
+  Worked on reducing number of warnings on Radiant. 
+  Still not able to put correct bitstream on FPGA.
+
+Mohammad: 
+  Decreased number of warnings in Radiant to try to get the bitstream on the board. 
+  $readmemh may not be able to be synthesized on Radiant.
+  Having meeting with Roy tomorrow, 17 May 2025, to discuss ways forward.
+
+Xiang: 
+  Made final report template, asked for comments from Roy and Rahul. 
+  Needs information from team members. (BOM, approach, meeting docs)
+
+Haoyang: 
+  Handed off PCB to Nathan. 
