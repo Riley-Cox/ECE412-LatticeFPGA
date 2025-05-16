@@ -19,24 +19,25 @@ module rv32_regs (
     output logic [31:0] rs1_value_out,
     output logic [31:0] rs2_value_out
 );
-    // 32-entry register file with initial zero content
-    logic [31:0] regs [31:0] = '{default:32'h0};
-    logic [4:0]  rs1;
-    logic [4:0]  rs2;
+    // infer a single-port SPRAM on UP5K
+    (* ramstyle = "block", syn_ramstyle = "block" *)
+    logic [31:0] regs [0:31];
 
-    // Read ports (registered addresses)
+    logic [4:0] rs1, rs2;
+
+    // two-port read (registered address)
     assign rs1_value_out = regs[rs1];
     assign rs2_value_out = regs[rs2];
 
-    // Address pipelining and write-back
     always_ff @(posedge clk) begin
         if (!stall_in) begin
             rs1 <= rs1_in;
             rs2 <= rs2_in;
         end
-        if (!writeback_flush_in && rd_write_in && |rd_in) begin
+
+        // write-back on MEM→WB
+        if (!writeback_flush_in && rd_write_in && |rd_in)
             regs[rd_in] <= rd_value_in;
-        end
     end
 endmodule
 
