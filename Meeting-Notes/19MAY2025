@@ -1,0 +1,20 @@
+Meeting Notes 19MAY2025
+
+Riley:
+  PCB design ready, Nathan looked over it, Andrew agreed to review it sometime this week
+
+Nathan:
+  No work this weekend; had military obligations
+
+Mohammad:
+  Still debugging with Roy on Radiant issues;
+    Synthesis report shows assembled .c file loading into memory
+    Dual-port BRAM implemented (had to convince tool to use BRAM)
+    Next step is using LEDs/LED pins to see into design functionality better
+
+Xiang:
+  Worked on other course work
+
+Haoyang:
+  Worked on other course work
+
