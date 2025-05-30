@@ -1,0 +1,21 @@
+30MAY2025
+
+Riley:
+  Soldered headers on Upduino wrong side, have to desolder and resolder headers
+  Will bring Haoyang finished board 
+Nathan:
+  Soldered headers on PCB backwards, need to desolder and resolder to do a fit
+  Will bring Haoyang finished board
+  
+Xiang:
+  No blocks, needs help with certain sections (Developer's manual)
+  Need BOM, layout/schematic, and block diagram
+
+Haoyang:
+  Needs to know location of switch and LCD screen on PCB, will update enclosure and print as quick as possible
+
+Mohammad:
+  Found two issues, Radiant found single cycle reset as always high, rewrote and now works
+  PC is being correctly generated
+  Brightness button is working, color button not working - program still not being loaded
+  Software is in block ram but is not being properly loaded
