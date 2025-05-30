@@ -17,9 +17,6 @@ module clk_div #(
             q <= q + 1;
     end
 
-    always_ff @(posedge clk_in)
-        q <= q + 1;
-
     assign clk_out = q[LOG_DIVISOR-1];
 endmodule
 
