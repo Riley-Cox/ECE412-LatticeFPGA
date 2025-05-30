@@ -1,48 +1,67 @@
-`ifndef RV32_REGS
-`define RV32_REGS
-
 module rv32_regs (
-    input clk,
-    input stall_in,
-    input writeback_flush_in,
+    input  logic        clk,
+    input  logic        stall_in,
+    input  logic        writeback_flush_in,
 
-    /* control in */
-    input [4:0] rs1_in,
-    input [4:0] rs2_in,
-    input [4:0] rd_in,
-    input rd_write_in,
+    input  logic [4:0]  rs1_in,
+    input  logic [4:0]  rs2_in,
+    input  logic [4:0]  rd_in,
+    input  logic        rd_write_in,
+    input  logic [31:0] rd_value_in,
 
-    /* data in */
-    input [31:0] rd_value_in,
-
-    /* data out */
     output logic [31:0] rs1_value_out,
     output logic [31:0] rs2_value_out
 );
-    logic [31:0] regs [31:0];
-    logic [4:0] rs1;
-    logic [4:0] rs2;
 
-    generate
-        genvar i;
-        for (i = 0; i < 32; i = i+1) begin
-            initial
-                regs[i] <= 0;
-        end
-    endgenerate
+    logic [4:0] rs1, rs2;
 
-    assign rs1_value_out = regs[rs1];
-    assign rs2_value_out = regs[rs2];
-
+    // Address capture
     always_ff @(posedge clk) begin
         if (!stall_in) begin
             rs1 <= rs1_in;
             rs2 <= rs2_in;
         end
-
-        if (!writeback_flush_in && rd_write_in && |rd_in)
-            regs[rd_in] <= rd_value_in;
     end
-endmodule
 
-`endif
+    logic ram_write_en;
+    assign ram_write_en = (!writeback_flush_in && rd_write_in && (rd_in != 5'd0));
+
+    // Internal wires for raw RAM outputs
+    logic [31:0] rs1_raw;
+    logic [31:0] rs2_raw;
+
+    // Instantiate RAM primitive for read port 1
+    ram_32x regsA (
+        .wr_clk_i(clk),
+        .rd_clk_i(clk),
+        .rst_i(1'b0),
+        .wr_clk_en_i(1'b1),
+        .rd_en_i(1'b1),
+        .rd_clk_en_i(1'b1),
+        .wr_en_i(ram_write_en),
+        .wr_data_i(rd_value_in),
+        .wr_addr_i(rd_in),
+        .rd_addr_i(rs1),
+        .rd_data_o(rs1_raw)
+    );
+
+    // Instantiate RAM primitive for read port 2
+    ram_32x regsB (
+        .wr_clk_i(clk),
+        .rd_clk_i(clk),
+        .rst_i(1'b0),
+        .wr_clk_en_i(1'b1),
+        .rd_en_i(1'b1),
+        .rd_clk_en_i(1'b1),
+        .wr_en_i(ram_write_en),
+        .wr_data_i(rd_value_in),
+        .wr_addr_i(rd_in),
+        .rd_addr_i(rs2),
+        .rd_data_o(rs2_raw)
+    );
+
+    // Final output logic: x0 is always zero
+    assign rs1_value_out = (rs1 == 5'd0) ? 32'b0 : rs1_raw;
+    assign rs2_value_out = (rs2 == 5'd0) ? 32'b0 : rs2_raw;
+
+endmodule
