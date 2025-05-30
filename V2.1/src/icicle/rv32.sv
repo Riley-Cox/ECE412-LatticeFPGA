@@ -38,7 +38,17 @@ module rv32 #(
     input data_fault_in,
 
     /* timer */
-    output logic [63:0] cycle_out
+    output logic [63:0] cycle_out,
+	
+	/* debug */
+	output logic [31:0] pc_debug,
+	output logic pcgen_stall_debug,
+	output logic instr_ready_debug,
+	output logic overwrite_pc_debug,
+	output logic [3:0] next_pc_debug
+
+
+
 );
     /* hazard -> fetch control */
     logic pcgen_stall;
@@ -311,8 +321,20 @@ module rv32 #(
         .instr_out(fetch_instr),
 
         /* data out (to memory bus) */
-        .instr_address_out(instr_address_out)
+        .instr_address_out(instr_address_out),
+		
+		/* debug */
+		.overwrite_pc_debug(overwrite_pc_debug),
+		.next_pc_debug(next_pc_debug)
+		
     );
+/*debug pc */
+    assign pc_debug = fetch_pc;
+	assign pcgen_stall_debug = pcgen_stall;
+	assign instr_ready_debug = instr_ready_in;
+
+
+
 
     rv32_decode decode (
         .clk(clk),
@@ -597,7 +619,7 @@ module rv32 #(
 
         /* data out (to timer) */
         .cycle_out(cycle_out)
-);
+    );
 
     rv32_writeback writeback (
         .clk(clk),
