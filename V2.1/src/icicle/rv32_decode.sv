@@ -3,7 +3,7 @@
 
 `include "rv32_control.sv"
 `include "rv32_csrs.sv"
-`include "rv32_regs.sv"
+//`include "rv32_regs.sv"
 
 module rv32_decode (
     input clk,
