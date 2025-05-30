@@ -53,14 +53,25 @@ module icicle (
     output logic screenPower,
     input bit  brightPush,
     input bit  colorPush,
-    output bit test_out
+    output bit test_out,
+	/* debug */
+    output logic [31:0] dbg_pc,
+	output logic pcgen_stall_debug,
+	output logic instr_ready_debug,
+	output logic overwrite_pc_debug,
+	output logic [3:0] next_pc_debug
+
+
+
+	
 );
     logic [31:0] instr_address;
     logic instr_read;
     logic [31:0] instr_read_value;
     logic instr_ready;
     logic instr_fault;
-
+	
+	logic [31:0] ram_read_value;
     logic [31:0] data_address;
     logic data_read;
     logic data_write;
@@ -69,7 +80,6 @@ module icicle (
     logic [31:0] data_write_value;
     logic data_ready;
     logic data_fault;
-
 
     logic [31:0] mem_address;
     logic mem_read;
@@ -82,7 +92,6 @@ module icicle (
 
     logic bright;
     logic color;
-
 
     assign mem_read_value = ram_read_value | leds_read_value | uart_read_value | timer_read_value | flash_read_value | spi_read_value;
     assign mem_ready = ram_ready | leds_ready | uart_ready | timer_ready | flash_ready | spi_ready | mem_fault;
@@ -117,6 +126,7 @@ module icicle (
     );
 
     logic [63:0] cycle;
+    logic [31:0] pc_debug;
 
     rv32 #(
         .RESET_VECTOR(`RESET_VECTOR)
@@ -139,8 +149,15 @@ module icicle (
         .data_ready_in(data_ready),
         .data_fault_in(data_fault),
 
-        .cycle_out(cycle)
+        .cycle_out(cycle),
+        .pc_debug(pc_debug),
+		.pcgen_stall_debug(pcgen_stall_debug),
+		.instr_ready_debug(instr_ready_debug),
+		.overwrite_pc_debug(overwrite_pc_debug),
+		.next_pc_debug(next_pc_debug)
     );
+
+    assign dbg_pc = pc_debug;
 
     logic ram_sel, leds_sel, uart_sel, timer_sel, flash_sel, spi_sel;
 
@@ -164,7 +181,6 @@ module icicle (
         endcase
     end
 
-    logic [31:0] ram_read_value;
     logic ram_ready;
 
     ram #(
