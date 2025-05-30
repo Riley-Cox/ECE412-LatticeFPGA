@@ -1,18 +1,14 @@
-//`include "defines.sv"
-//`include "icicle.sv"
-//`include "pll.sv"
 `include "sync.sv"
 `define INTERNAL_OSC
 
 module top (
-
     /* LEDs */
-    output logic [7:0] leds,
+    output logic [5:0] leds,
 
     /* UART */
     input uart_rx,
     output logic uart_tx,
-	
+
     /* SPI Controller */
     output logic spi_clk,
     output logic spi_mosi,
@@ -25,109 +21,107 @@ module top (
     output logic screenPower,
 
     /* ssr */
-     (* PULLUP *) input logic r,
+    (* PULLUP *) input logic r,
 
-    //Test signal
-    output bit test_out
+    /* Debug outputs */
+    output logic dbg_reset_release,
+    output logic dbg_reset,
+    output logic dbg_greset,
+    output logic dbg_pll_locked,
+
+    /* PC monitor */
+    output logic [3:0] pc_top,
+	output logic pcgen_stall_debug,
+	output logic instr_ready_debug,
+	output logic overwrite_pc_debug,
+	output logic [3:0] next_pc_debug
+
 
 );
 
-	
-logic greset, ssr, qBar, reset /* syn_keep = 1 */; 
-logic q /* syn_keep = 1 */; 
-always_ff @(posedge pll_clk) begin
-	q <= r;
-end
-assign qBar = ~q;
-assign ssr = qBar & r;	
-	
+logic pll_clk, clk;
+logic pll_locked_async, pll_locked;
+logic [3:0] reset_count;
+logic reset_release = 0;
+logic reset, greset;
 
-assign greset = reset | ssr;
-
-
-
-
-	
 `ifdef INTERNAL_OSC
-    logic clk;
-
-	HSOSC #(.CLKHF_DIV ("0b01")) inthosc (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(clk));
+    HSOSC #(.CLKHF_DIV("0b01")) inthosc (
+        .CLKHFPU(1'b1),
+        .CLKHFEN(1'b1),
+        .CLKHF(clk)
+    );
 `endif
 
-   (* keep *) logic pll_clk;
-    logic pll_locked_async;
-	
-	
+pll_gen u_pll (
+    .ref_clk_i(clk),
+    .rst_n_i(1'b1),
+    .outcore_o(pll_clk),
+    .lock_o(pll_locked_async)
+);
 
-	    pll_gen u_pll (
-        .ref_clk_i(clk),
-        .rst_n_i(1'b1),
-        .outcore_o(pll_clk),
-        .lock_o(pll_locked_async)
-    );
+sync sync (
+    .clk(pll_clk),
+    .in(pll_locked_async),
+    .out(pll_locked)
+);
 
-
-logic unused_clk;
-
-
-    logic pll_locked;
-
-    logic [3:0] reset_count;
-/**
-logic [23:0] blink_counter;
-
+// SSR rising edge detection for 1-cycle pulse
+logic r_sync_0 = 0, r_sync_1 = 0;
 always_ff @(posedge pll_clk) begin
-    blink_counter <= blink_counter + 1;
+    r_sync_0 <= r;
+    r_sync_1 <= r_sync_0;
 end
 
-assign leds = blink_counter[23:16];
-**/
-    always_ff @(posedge pll_clk) begin
-        if (&reset_count) begin
-            if (pll_locked) begin
-                reset <= 0;
-            end else begin
-                reset <= 1;
-                reset_count <= 0;
-            end
+wire ssr_rising = r_sync_0 & ~r_sync_1;
+
+assign greset = reset | ssr_rising;
+
+// Reset logic
+always_ff @(posedge pll_clk) begin
+    if (!reset_release) begin
+        if (pll_locked) begin
+            reset_count <= reset_count + 1;
+            if (&reset_count)
+                reset_release <= 1;
         end else begin
-            reset <= 1;
-            reset_count <= reset_count + pll_locked;
+            reset_count <= 0;
         end
-    end	
-	
+    end
+end
 
+assign reset = ~reset_release;
 
+// Debug outputs
+assign dbg_reset_release = reset_release;
+assign dbg_reset         = reset;
+assign dbg_greset        = greset;
+assign dbg_pll_locked    = pll_locked;
 
-    sync sync (
-        .clk(pll_clk),
-        .in(pll_locked_async),
-        .out(pll_locked)
-    );
+// Core PC tap
+logic [31:0] icicle_pc;
+assign pc_top = icicle_pc[31:28];
 
-      icicle icicle (
-        .clk(pll_clk),
-        .reset(greset),
-
-        /* LEDs */
-        .leds(leds),
-
-        /* UART */
-        .uart_rx(uart_rx),
-        .uart_tx(uart_tx),
-		
-	/* SPI Controller */
-	.spi_clk(spi_clk),
-	.spi_mosi(spi_mosi),
-	.spi_cs_n(spi_cs_n),
-	.lcd_dc(lcd_dc),
-
-	/* Button */
-	.brightPush(~brightPush),
-	.colorPush(~colorPush),
-	.screenPower(screenPower),
-	.test_out(test_out)
-
-    );
+// Core instantiation
+icicle icicle (
+    .clk(pll_clk),
+    .reset(greset),
+    .leds(),
+    .uart_rx(uart_rx),
+    .uart_tx(uart_tx),
+    .spi_clk(spi_clk),
+    .spi_mosi(spi_mosi),
+    .spi_cs_n(spi_cs_n),
+    .lcd_dc(lcd_dc),
+    .brightPush(~brightPush),
+    .colorPush(~colorPush),
+    .screenPower(screenPower),
+    .test_out(),
+    .dbg_pc(icicle_pc),
+	.pcgen_stall_debug(pcgen_stall_debug),
+	.instr_ready_debug(instr_ready_debug),
+	.overwrite_pc_debug(overwrite_pc_debug),
+    .next_pc_debug(next_pc_debug) 
+);
 
 endmodule
