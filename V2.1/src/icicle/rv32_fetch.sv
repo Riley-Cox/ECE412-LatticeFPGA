@@ -55,7 +55,11 @@ module rv32_fetch #(
     output logic [31:0] instr_out,
 
     /* data out (to memory bus) */
-    output logic [31:0] instr_address_out
+    output logic [31:0] instr_address_out,
+	/* debug */
+	output logic overwrite_pc_debug,
+	output logic [3:0] next_pc_debug
+
 );
     logic [31:0] pc = RESET_VECTOR;
     logic [31:0] next_pc;
@@ -81,6 +85,15 @@ module rv32_fetch #(
     assign imm_j = {{12{sign}}, instr_read_value_in[19:12], instr_read_value_in[20],    instr_read_value_in[30:25], instr_read_value_in[24:21], 1'b0};
     assign imm_b = {{20{sign}}, instr_read_value_in[7],     instr_read_value_in[30:25], instr_read_value_in[11:8],  1'b0};
     assign opcode = instr_read_value_in[6:0];
+	/* debug */ 
+	assign overwrite_pc_debug = overwrite_pc;
+	logic [3:0] next_pc_latched;
+
+	always_ff @(posedge clk) begin
+		next_pc_latched <= pc[3:0];
+	end
+
+	assign next_pc_debug = next_pc_latched;
 
     generate
         if (BRANCH_PREDICTION) begin
@@ -116,11 +129,11 @@ module rv32_fetch #(
         else
             next_pc = pc + branch_offset;
     end
-
+/**
     initial begin
         instr_out <= `RV32_INSTR_NOP;
     end
-
+**/
     always_ff @(posedge clk) begin
         if (pcgen_stall_in) begin
             if (!overwrite_pc && (trap_in || branch_mispredicted_in)) begin
@@ -133,7 +146,7 @@ module rv32_fetch #(
             trap <= 0;
             pc <= next_pc;
         end
-
+	
         if (!stall_in) begin
             valid_out <= 1;
             exception_out <= 0;
@@ -173,7 +186,7 @@ module rv32_fetch #(
             branch_predicted_taken_out <= 0;
             instr_out <= `RV32_INSTR_NOP;
             pc <= RESET_VECTOR;
-            pc_out <= 0;
+            pc_out <= 0; 
         end
     end
 endmodule
