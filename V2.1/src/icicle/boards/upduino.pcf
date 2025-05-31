@@ -6,7 +6,7 @@ set_io flash_io0 17
 set_io flash_io1 14
 set_io leds[0]   35
 set_io leds[1]   10
-set_io leds[2]   36
+set_io leds[2]   19
 set_io leds[3]   43
 set_io leds[4]   34
 set_io leds[5]   37
@@ -18,7 +18,7 @@ set_io spi_mosi  25
 set_io spi_clk   23
 set_io spi_cs_n  26
 set_io lcd_dc    27
-set_io -pullup yes -pullup_resistor 10K brightPush 28
-set_io -pullup yes -pullup_resistor 10K colorPush 38
-set_io  screenPower 19
-set_io test_out 9
+set_io brightPush 28
+set_io colorPush 38
+set_io screenPower 36
+set_io r 9
