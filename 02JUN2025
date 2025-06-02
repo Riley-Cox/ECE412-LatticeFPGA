@@ -1,0 +1,36 @@
+Meeting Notes 02JUN2025
+
+Haoyang:
+
+  Enclosure complete!!!!
+  Will return to Nathan/Riley to get a charging port figured out
+
+Xiang:
+
+  We need to do poster, due Sunday
+  Working on now
+  Everyone need to fill out weekly report
+
+Riley: 
+
+  Finished PCB population
+  Issues with debounce circuit
+  Added debounce to button modules in Verilog
+  Pull Requests up
+
+Mohammad:
+
+  Still working on Radiant port
+  PC is moving
+    Decode, fetch happening correctly
+    Working on hooking up primitives to new Radiant memory blocks 
+    Meeting with Nathan Wednesday to determine future work vs hands down time
+
+Nathan:
+
+  PCB population last week
+  Removed capacitors on the brightness and colorchange buttons due to circuit problems (
+  Going to add a charging port that reaches to the enclosure end
+
+
+Shooting for doc review/revision session Friday, Mohammad and Nathan meet Wednesday to figure out if it's time to give up on Radiant and start documenting next steps
