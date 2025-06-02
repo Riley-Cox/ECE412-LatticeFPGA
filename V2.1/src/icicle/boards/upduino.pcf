@@ -18,7 +18,8 @@ set_io spi_mosi  25
 set_io spi_clk   23
 set_io spi_cs_n  26
 set_io lcd_dc    27
-set_io brightPush 28
-set_io colorPush 38
+set_io -pullup yes -pullup_resistor 10K brightPush 28
+set_io -pullup yes -pullup_resistor 10K colorPush 38
 set_io screenPower 36
-set_io r 9
+set_io -pullup yes -pullup_resistor 10K r 9
+set_io test_out 18
