@@ -1,13 +1,22 @@
 module button (input bit press,input bit clk, reset, output logic action);
+int count;
 
 always_ff @(posedge clk or negedge reset) begin
-	if (!reset)
+  if (!reset) begin
 		action <= '0;
-	else if (press)
-
+    count <= 10000000;
+  end
+  else if (press && (count == 0)) begin
 		action <= '1;
-	else
+    count <= 10000000;
+  end
+  else begin
 		action <= '0;
+    if (count == 0)
+      count <= 0;
+    else if (!press)
+      count <= count -1;
+  end
 end
 
 endmodule
