@@ -10,7 +10,7 @@
 - To ensure that it is installed run `usbipd list` , you should see your usb device with its BusID (the UPduino should show up as "serial converter")
 - A USB bind is needed. Open Powershell as Admin, then run `usbipd bind --busid <busid>`
 - To attach a USB to WSL run `usbipd attach --wsl --busid <busid>`
-- In WSL, the device should show up when `lsusb` is ran
+- In WSL, the device should show up when `lsusb` is ran, if the command is not found run  `sudo apt-get install usbutils `
 - To disconnect the device run `usbipd detach --busid <busid>`
 
 ## Dependencies
